@@ -4,6 +4,8 @@ public class JsonReq {
 	Basic BasicObject;
 	private String ops;
 
+	public JsonReq() {
+	}
 	// Getter Methods
 
 	public Basic getBasic() {

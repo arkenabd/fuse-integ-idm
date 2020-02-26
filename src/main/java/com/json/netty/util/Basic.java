@@ -1,34 +1,36 @@
 package com.json.netty.util;
 
-
 public class Basic {
 
-private String ref;
-private String tid;
-private String remark;
+	private String ref;
+	private String tid;
+	private String remark;
 
-public String getRef() {
-return ref;
-}
+	public Basic() {
+	}
 
-public void setRef(String ref) {
-this.ref = ref;
-}
+	public String getRef() {
+		return ref;
+	}
 
-public String getTid() {
-return tid;
-}
+	public void setRef(String ref) {
+		this.ref = ref;
+	}
 
-public void setTid(String tid) {
-this.tid = tid;
-}
+	public String getTid() {
+		return tid;
+	}
 
-public String getRemark() {
-return remark;
-}
+	public void setTid(String tid) {
+		this.tid = tid;
+	}
 
-public void setRemark(String remark) {
-this.remark = remark;
-}
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 
 }
