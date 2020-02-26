@@ -5,6 +5,6 @@
     <bean class="com.json.netty.ParsingIso" id="parsingIso" scope="singleton"/>
     <bean class="com.json.netty.GenerateIso" id="generateIso" scope="singleton"/>
     <bean class="com.client.netty.TcpClient" id="tcpClient" scope="singleton"/>
-    <bean class="com.client.netty.GenerateFixLengthReq" id="generateFixLengthReq" scope="singleton"/>
-    <bean class="com.client.netty.ParsingFixLengthResp" id="parsingFixLengthResp" scope="singleton"/>
+    <bean class="com.json.netty.GenerateFixLengthReq" id="generateFixLengthReq" scope="singleton"/>
+    <bean class="com.json.netty.ParsingFixLengthResp" id="parsingFixLengthResp" scope="singleton"/>
 </beans>
