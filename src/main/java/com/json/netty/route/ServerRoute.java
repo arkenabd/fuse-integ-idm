@@ -34,7 +34,7 @@ public class ServerRoute extends RouteBuilder {
 
 		from("direct:appCreated")
 				// unmarshall for mapping parameter input into a POJO
-				.unmarshal().json(JsonLibrary.Gson, JsonReq.class)
+				//.unmarshal().json(JsonLibrary.Gson, JsonReq.class)
 				.log("Body : (${body})")
 				.log("Body getBasic: (${body.getBasic})")
 				.log("Body getRef : (${body.getBasic.getRef})")
