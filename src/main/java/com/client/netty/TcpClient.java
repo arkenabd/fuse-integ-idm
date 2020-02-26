@@ -11,27 +11,23 @@ import org.jpos.iso.ISOException;
 import org.springframework.stereotype.Component;
 
 import com.json.netty.GenerateIso;
+import com.json.netty.ParsingFixLengthResp;
 import com.json.netty.ParsingIso;
 
 @Component
 public class TcpClient {
-	public void printParamIn(int id, String name) {
-		System.out.println("Param IN :" + id + ";" + name);
-	}
 
-	public String call(int id, String name) {
-		printParamIn(id, name);
+	public String call(String inputVal) {
+		System.out.println("INSIDE TCP CLIENT");
+		System.out.println("Fixlength message :" + inputVal);
 		String msgReceived = "";
 		try {
-			InetAddress address = InetAddress.getByName("localhost");
-			Socket socket = new Socket(address, 7000);
+			InetAddress address = InetAddress.getByName("34.87.45.79");
+			Socket socket = new Socket(address, 23472);
 			OutputStream os = socket.getOutputStream();
-			GenerateIso genIso = new GenerateIso();
 			System.out.println("Message sent.");
-			// String str = "010032200000000100000200000000000050000221151855123456013|" +
-			// id + "|" + name;
-			String str = genIso.generate(String.valueOf(id), name);
-			byte[] byteArr = str.getBytes();
+
+			byte[] byteArr = inputVal.getBytes();
 			os.write(byteArr, 0, byteArr.length);
 
 			InputStream is = socket.getInputStream();
@@ -50,10 +46,18 @@ public class TcpClient {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		ParsingIso parsingIso = new ParsingIso();
-		String returnJson = "";
+//		ParsingIso parsingIso = new ParsingIso();
+//		String returnJson = "";
+//		try {
+//			returnJson = parsingIso.parsingIsoMessage(msgReceived);
+//		} catch (ISOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		ParsingFixLengthResp parseResp = new ParsingFixLengthResp();
+		String returnJson = null;
 		try {
-			returnJson = parsingIso.parsingIsoMessage(msgReceived);
+			returnJson = parseResp.parsingIsoMessage(msgReceived);
 		} catch (ISOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

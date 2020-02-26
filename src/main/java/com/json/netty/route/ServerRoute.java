@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.json.netty.Application;
 import com.json.netty.util.Ops;
 import com.json.netty.util.ResponseType;
-import com.json.netty.util.UserPojo;
+import com.json.netty.util.JsonReq;
 
 @Component
 public class ServerRoute extends RouteBuilder {
@@ -30,14 +30,20 @@ public class ServerRoute extends RouteBuilder {
 		rest().path("/hello").get().route().transform().constant("Hello World").marshal().json(JsonLibrary.Gson,
 				ResponseType.class);
 
-		rest().path("/reg").post().type(UserPojo.class).to("direct:appCreated");
+		rest().path("/reg").post().type(JsonReq.class).to("direct:appCreated");
 
 		from("direct:appCreated")
 				// unmarshall for mapping parameter input into a POJO
-				.unmarshal().json(JsonLibrary.Gson, UserPojo.class).log("Body : (${body})")
-				.log("Body id : (${body.id})").log("Body name : (${body.name})")
+				.unmarshal().json(JsonLibrary.Gson, JsonReq.class)
+				.log("Body : (${body})")
+				.log("Body getRef : (${body.getBasic.getRef})")
+				.log("Body getTid : (${body.getBasic.getTid})")
+				.log("Body getRemark : (${body.getBasic.getRemark})")
+				.log("Body getOps : (${body.getOps})")
 				// assign value to a POJO
-				.bean("tcpClient", "call(${body.getId},${body.getName})")
+				.bean("generateFixLengthReq", "generate(${body.getBasic.getRemark},${body.getOps})")
+				.log("Body after generateFixLengthReq : (${body})")
+				.bean("tcpClient", "call(${body})")
 				//.bean("postBean", "setValue(${body.getId},${body.getName})")
 				// marshall for generating json as return based on a POJO
 				// .marshal().json(JsonLibrary.Gson, UserPojo.class)
