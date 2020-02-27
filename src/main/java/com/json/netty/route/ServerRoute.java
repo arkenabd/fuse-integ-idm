@@ -22,7 +22,7 @@ public class ServerRoute extends RouteBuilder {
 		JAXBContext jaxbContext = JAXBContext.newInstance(Ops.class);
 		JaxbDataFormat eventDataFormat = new JaxbDataFormat(jaxbContext);
 
-		restConfiguration().apiContextPath("/openapi.json").component("restlet").contextPath("/hanabank").port("4040")
+		restConfiguration().apiContextPath("/openapi.json").component("restlet").contextPath("/hanabank").port("7070")
 				.scheme("http").apiProperty("api.title", "Hana Bank - Registration").apiProperty("api.version", "1")
 				.apiProperty("api.specification.contentType.json", "application/vnd.oai.openapi+json;version=2.0")
 				.apiProperty("api.specification.contentType.yaml", "application/vnd.oai.openapi;version2.0");
