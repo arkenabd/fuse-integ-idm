@@ -22,10 +22,10 @@ public class TcpClient {
 		System.out.println("Fixlength message :" + inputVal);
 		String msgReceived = "";
 		try {
-//			InetAddress address = InetAddress.getByName("34.87.45.79");
-//			Socket socket = new Socket(address, 23472);
-			InetAddress address = InetAddress.getByName("0.0.0.0");
-			Socket socket = new Socket(address, 7000);
+			InetAddress address = InetAddress.getByName("34.87.45.79");
+			Socket socket = new Socket(address, 23472);
+//			InetAddress address = InetAddress.getByName("0.0.0.0");
+//			Socket socket = new Socket(address, 7000);
 			OutputStream os = socket.getOutputStream();
 			System.out.println("Message sent.");
 
