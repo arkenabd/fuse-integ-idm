@@ -10,7 +10,7 @@
                 unmarshalTypeName="com.json.netty.util.PojoTest" useDefaultObjectMapper="true"/>
         </dataFormats>
         <restConfiguration bindingMode="off" component="restlet"
-            contextPath="/hanabank" host="localhost" port="7070"/>
+            contextPath="/hanabank" host="0.0.0.0" port="7070"/>
         <rest id="rest-1e852fc0-7e2d-430c-b111-006050d7428a">
             <post id="6a8d49ca-dd9f-4a6d-9dae-19245a588c24" uri="/test/json">
                 <to uri="direct:posttest"/>
