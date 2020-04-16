@@ -1,6 +1,6 @@
 package com.json.netty.util;
 
-public class Basic {
+public class TestBasic {
 
 	private String ref;
 	private String tid;
