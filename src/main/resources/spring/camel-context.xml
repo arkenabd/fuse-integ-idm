@@ -25,7 +25,7 @@
         <route id="_GET">
             <from id="_from1" uri="direct:get"/>
             <doTry id="_doTry1">
-                <log id="_log1" loggingLevel="WARN" message="Header name value : ${body}"/>
+                <log id="_log1" loggingLevel="WARN" message="Header name value : ${header.name}"/>
                 <setBody id="_setBody4">
                     <simple>${header.name}</simple>
                 </setBody>
@@ -33,12 +33,12 @@
                     <when id="_when1">
                         <simple>${body}== 'arken'</simple>
                         <setBody id="_setBody1">
-                            <simple>[ "result" : "Hello Boss , ${header.name}"" ]</simple>
+                            <simple>{ "result" : "Hello Boss , ${header.name}" }</simple>
                         </setBody>
                     </when>
                     <otherwise id="_otherwise1">
                         <setBody id="_setBody3">
-                            <simple>[ "result" : "Hello, ${header.name}" ]</simple>
+                            <simple>{ "result" : "Hello, ${header.name}" }</simple>
                         </setBody>
                     </otherwise>
                 </choice>
