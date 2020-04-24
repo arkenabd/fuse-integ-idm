@@ -3,12 +3,11 @@ package com.json.netty.pojo.out;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.json.netty.util.JsonResult;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @JsonPropertyOrder({ "Timestamp", "ClientID", "Key", "BranchID", "CounterID", "ProductType", "TrxType", "Detail",
 		"Timeout", "VersiProgram", "RespCode", "RespDetail" })
-public class IdmMainPojo {
+public class IdmMainPojoB {
 
 	@JsonProperty("Timestamp")
 	private String timestamp;
@@ -25,7 +24,7 @@ public class IdmMainPojo {
 	@JsonProperty("TrxType")
 	private String trxType;
 	@JsonProperty("Detail")
-	private IdmDetail detail;
+	private String detail;
 	@JsonProperty("Timeout")
 	private String timeout;
 	@JsonProperty("VersiProgram")
@@ -106,12 +105,12 @@ public class IdmMainPojo {
 	}
 
 	@JsonProperty("Detail")
-	public IdmDetail getDetail() {
+	public String getDetail() {
 		return detail;
 	}
 
 	@JsonProperty("Detail")
-	public void setDetail(IdmDetail detail) {
+	public void setDetail(String detail) {
 		this.detail = detail;
 	}
 
@@ -155,10 +154,10 @@ public class IdmMainPojo {
 		this.respDetail = respDetail;
 	}
 
-	public IdmMainPojo assignValue(String timestamp, String clientID, String key, String branchID, String counterID,
-			String productType, String trxType, String detailTrxConfirm, String timeout, String versiProgram,
-			String respCode, String respDetail) {
-		IdmMainPojo jres = new IdmMainPojo();
+	public IdmMainPojoB assignValue(String timestamp, String clientID, String key, String branchID, String counterID,
+			String productType, String trxType, String timeout, String versiProgram, String respCode,
+			String respDetail) {
+		IdmMainPojoB jres = new IdmMainPojoB();
 		jres.setTimestamp(timestamp.trim());
 		jres.setClientID(clientID.trim());
 		jres.setKey(key.trim());
@@ -166,14 +165,11 @@ public class IdmMainPojo {
 		jres.setCounterID(counterID.trim());
 		jres.setProductType(productType.trim());
 		jres.setTrxType(trxType.trim());
-		IdmDetail detail = new IdmDetail();
-		detail.setTrxConfirm(detailTrxConfirm.trim());
-		jres.setDetail(detail);
+		jres.setDetail("");
 		jres.setTimeout(timeout.trim());
 		jres.setVersiProgram(versiProgram.trim());
 		jres.setRespCode(respCode.trim());
 		jres.setRespDetail(respDetail.trim());
 		return jres;
 	}
-
 }
