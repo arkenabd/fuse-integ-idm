@@ -106,7 +106,7 @@
         <route id="_Integ-IDM">
             <from id="_from4" uri="direct:integ_idm"/>
             <doTry id="_doTry2">
-                <log id="_input_msg" message="Input Message : ${body}"/>
+                <log id="_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <convertBodyTo id="_convertBodyTo2" type="java.lang.String"/>
                 <unmarshal id="_input_to_pojo">
                     <custom ref="idm_dataformat"/>
