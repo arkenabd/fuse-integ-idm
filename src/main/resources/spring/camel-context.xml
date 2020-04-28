@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="java.util.Properties" id="myProperties"/>
+    <bean
+        class="org.apache.camel.component.properties.PropertiesComponent" id="properties">
+        <property name="cache" value="false"/>
+        <property name="location" value="classpath:application.properties"/>
+        <property name="overrideProperties" ref="myProperties"/>
+    </bean>
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -66,110 +73,107 @@
                 </doCatch>
             </doTry>
         </route>
-        <route id="_POST">
-            <from id="_from2" uri="direct:post"/>
-            <log id="_log2" message="${body}"/>
-            <bean id="_bean1" method="generate" ref="preGenerateFL"/>
-            <marshal id="_marshal2">
-                <flatpack definition="flconfigIn.xml" fixed="true" ignoreFirstRecord="false"/>
-            </marshal>
-            <to id="_to2" uri="netty:tcp://localhost:7000?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
-            <log id="_log3" message="After Call TCP :${body}"/>
-            <unmarshal id="_unmarshal1">
-                <flatpack definition="flconfigOut.xml" fixed="true" ignoreFirstRecord="false"/>
-            </unmarshal>
-            <setProperty id="_DESC" propertyName="getDESC">
-                <simple>${body.get(0).get(DESC)}</simple>
-            </setProperty>
-            <setBody id="_setBody2">
-                <simple>${body.get(0).get(DESC)}</simple>
-            </setBody>
-            <marshal id="_marshal3">
-                <json library="Gson"/>
-            </marshal>
-        </route>
-        <route id="_POST_TEST">
-            <from id="_from3" uri="direct:posttest"/>
-            <log id="_log4" message="Input message : ${body}"/>
-            <!-- <marshal id="_parseInput"> <custom ref="pojotest"/> </marshal> -->
-            <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
-            <unmarshal id="_unmarshal2">
-                <custom ref="pojotest"/>
-            </unmarshal>
-            <log id="_log5" message="ops value : ${body.ops}"/>
-            <bean id="_bean2"
-                method="assignValue(${body.basic.ref},${body.basic.tid},${body.basic.remark},${body.ops})" ref="jsonResult"/>
-            <marshal id="_marshal1">
-                <json library="Jackson"/>
-            </marshal>
-        </route>
         <route id="_Integ-IDM">
             <from id="_from4" uri="direct:integ_idm"/>
             <doTry id="_doTry2">
                 <log id="_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
-                <convertBodyTo id="_convertBodyTo2" type="java.lang.String"/>
+                <log id="_Current_SeqNum" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
+                <setProperty id="_SeqNum" propertyName="counter">
+                    <simple>${properties:test}</simple>
+                </setProperty>
+                <process id="_SeqNum++" ref="generateCounter"/>
+                <log id="_New_SeqNum" message="New value is ${properties:test}"/>
+                <convertBodyTo id="_String" type="java.lang.String"/>
                 <unmarshal id="_input_to_pojo">
                     <custom ref="idm_dataformat"/>
                 </unmarshal>
-                <log id="_unmarshall_result" message="Transaction Type value : ${body.trxType}"/>
+                <log id="_TrxType" message="Transaction Type value : ${body.trxType}"/>
                 <bean id="_bean3"
                     method="generate(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})" ref="IdmPreGenerateFL"/>
                 <marshal id="_marshal4">
                     <flatpack definition="IdmFlconfigIn.xml"
                         fixed="true" ignoreFirstRecord="false"/>
                 </marshal>
-                <to id="_to22" uri="netty:tcp://172.16.90.147:49810?requestTimeout=3000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
-                <log id="_responseHli" message="After Call TCP HLI :  ${body}"/>
-                <unmarshal id="_unmarshal3">
-                    <flatpack definition="IdmFlconfigOut.xml"
-                        fixed="true" ignoreFirstRecord="false"/>
-                </unmarshal>
-                <log id="_log6" message="Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
-                <choice id="_choice2">
-                    <when id="_when2">
-                        <simple>${body.get(0).get(TRX_TYPE)} == 'CASHOUT'</simple>
-                        <log id="_log7" message="Choosen A : ${body.get(0).get(TRX_TYPE)}"/>
-                        <bean id="_JsonResult"
-                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponse"/>
+                <setProperty id="_keepBody" propertyName="bodyBeforeCallTcpRouter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:80?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
+                <choice id="_choice3">
+                    <when id="_when3">
+                        <simple>${body} contains 'Error'</simple>
+                        <setProperty id="_setProperty1" propertyName="errorMessageTcpRouter">
+                            <simple>${body}</simple>
+                        </setProperty>
+                        <setBody id="_setBodyErrorTcpRouter">
+                            <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
+                        </setBody>
+                        <unmarshal id="_unmarshal1">
+                            <flatpack definition="IdmFlconfigIn.xml" fixed="true"/>
+                        </unmarshal>
+                        <bean id="_JsonResulErrorTcpRouter"
+                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'errorFromTcpRouter','Transaksi tidak berhasil'.${exchangeProperty[errorMessageTcpRouter]})" ref="IdmJsonResponse"/>
+                        <marshal id="_marshal1">
+                            <json library="Jackson"/>
+                        </marshal>
                     </when>
-                    <otherwise id="_otherwise2">
-                        <log id="_log8" message="Choosen B : ${body.get(0).get(TRX_TYPE)}"/>
-                        <bean id="_bean4"
-                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponseB"/>
+                    <otherwise id="_otherwise3">
+                        <log id="_responseHli" message="After Call TCP HLI (from IDM):  ${body}"/>
+                        <unmarshal id="_unmarshal3">
+                            <flatpack definition="IdmFlconfigOut.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="_log6" message="Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
+                        <choice id="_choice2">
+                            <when id="_when2">
+                                <simple>${body.get(0).get(TRX_TYPE)} == 'CASHOUT'</simple>
+                                <log id="_log7" message="Choosen A : ${body.get(0).get(TRX_TYPE)}"/>
+                                <bean id="_JsonResult"
+                                    method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponse"/>
+                            </when>
+                            <otherwise id="_otherwise2">
+                                <log id="_log8" message="Choosen B : ${body.get(0).get(TRX_TYPE)}"/>
+                                <bean id="_bean4"
+                                    method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponseB"/>
+                            </otherwise>
+                        </choice>
+                        <marshal id="_marshal5">
+                            <json library="Jackson"/>
+                        </marshal>
                     </otherwise>
                 </choice>
-                <marshal id="_marshal5">
-                    <json library="Jackson"/>
-                </marshal>
                 <doCatch id="_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <log id="_log2" message="Error 404 Body : ${body}"/>
                     <bean id="_JsonResultError404"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format data salah')" ref="IdmJsonResponse"/>
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal6">
                         <json library="Jackson"/>
                     </marshal>
                 </doCatch>
                 <doCatch id="_error408">
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <log id="_log3" message="Error 408 Body : ${body}"/>
                     <unmarshal id="_unmarshal408">
                         <flatpack definition="IdmFlconfigIn.xml"
                             fixed="true" ignoreFirstRecord="false"/>
                     </unmarshal>
                     <bean id="_JsonResultError408"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request Time Out')" ref="IdmJsonResponse"/>
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request Time Out'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal408">
                         <json library="Jackson"/>
                     </marshal>
                 </doCatch>
                 <doCatch id="_error093">
                     <exception>java.net.ConnectException</exception>
+                    <log id="_log4" message="Error 093 Body : ${body}"/>
                     <unmarshal id="_unmarshal4">
                         <flatpack definition="IdmFlconfigIn.xml"
                             fixed="true" ignoreFirstRecord="false"/>
                     </unmarshal>
                     <bean id="_JsonResultError093"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi tidak berhasil')" ref="IdmJsonResponse"/>
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi tidak berhasil'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal093">
                         <json library="Jackson"/>
                     </marshal>
@@ -190,4 +194,5 @@
         id="IdmJsonResponse" scope="singleton"/>
     <bean class="com.json.netty.pojo.out.IdmMainPojoB"
         id="IdmJsonResponseB" scope="singleton"/>
+    <bean class="com.json.netty.GenerateCounter" id="generateCounter" scope="singleton"/>
 </beans>

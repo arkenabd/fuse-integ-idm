@@ -1,5 +1,7 @@
 package com.json.netty.pojo.out;
 
+import org.apache.camel.Exchange;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -157,7 +159,7 @@ public class IdmMainPojo {
 
 	public IdmMainPojo assignValue(String timestamp, String clientID, String key, String branchID, String counterID,
 			String productType, String trxType, String detailTrxConfirm, String timeout, String versiProgram,
-			String respCode, String respDetail) {
+			String respCode, String respDetail, Exchange exchange) {
 		IdmMainPojo jres = new IdmMainPojo();
 		jres.setTimestamp(timestamp.trim());
 		jres.setClientID(clientID.trim());
