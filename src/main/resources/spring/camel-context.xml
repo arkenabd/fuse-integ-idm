@@ -144,6 +144,7 @@
                     </otherwise>
                 </choice>
                 <doCatch id="_error408">
+                <exception>java.lang.IllegalArgumentException</exception>
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
                     <exception>org.apache.camel.ExpressionEvaluationException</exception>
                     <exception>org.apache.camel.CamelExchangeException</exception>
@@ -164,7 +165,7 @@
                         <json library="Jackson"/>
                     </marshal>
                 </doCatch>
-                <doCatch id="_error404">
+                <!-- <doCatch id="_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="_log2" message="Error 404 Body : ${body}"/>
                     <bean id="_JsonResultError404"
@@ -172,7 +173,7 @@
                     <marshal id="_marshal6">
                         <json library="Jackson"/>
                     </marshal>
-                </doCatch>
+                </doCatch> -->
                 <doCatch id="_error093">
                     <exception>java.net.ConnectException</exception>
                     <log id="_log4" message="Error 093 Body : ${body}"/>
