@@ -145,7 +145,6 @@
                 </choice>
                 <doCatch id="_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
-                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
                     <log id="_log2" message="Error 404 Body : ${body}"/>
                     <bean id="_JsonResultError404"
                         method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
@@ -155,6 +154,7 @@
                 </doCatch>
                 <doCatch id="_error408">
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
                     <exception>org.apache.camel.CamelExchangeException</exception>
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
