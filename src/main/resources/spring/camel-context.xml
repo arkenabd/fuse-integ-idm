@@ -97,10 +97,12 @@
                 <setProperty id="_keepBody" propertyName="bodyBeforeCallTcpRouter">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:31958?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
+                <!-- <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:31958?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
+                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:31958?requestTimeout=10000"/>
                 <choice id="_choice3">
                     <when id="_when3">
                         <simple>${body} contains 'Error'</simple>
+                        <log id="_log5" message="After Call TCP HLI (from IDM):  ${body}"/>
                         <setProperty id="_setProperty1" propertyName="errorMessageTcpRouter">
                             <simple>${body}</simple>
                         </setProperty>
