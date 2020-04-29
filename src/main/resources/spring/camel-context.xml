@@ -97,7 +97,7 @@
                 <setProperty id="_keepBody" propertyName="bodyBeforeCallTcpRouter">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:31958?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
+                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:80?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
                 <log id="_log2" message="Body Length After Call HLI : ${body.length}"/>
                 <choice id="_choice3">
                     <when id="_when3">
