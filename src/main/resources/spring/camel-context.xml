@@ -8,8 +8,6 @@
         <property name="location" value="classpath:application.properties"/>
         <property name="overrideProperties" ref="myProperties"/>
     </bean>
-    <!-- <bean class="com.json.netty.StopRoutePolicy" id="myRedeliveryPolicy"> 
-		<property name="maximumRedeliveries" value="${myprop.max}" /> </bean> -->
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -100,7 +98,6 @@
                     <simple>${body}</simple>
                 </setProperty>
                 <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:31958?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
-                <!-- <to id="_to22" uri="netty:tcp://localhost:7000?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
                 <log id="_log2" message="Body Length After Call HLI : ${body.length}"/>
                 <choice id="_choice3">
                     <when id="_when3">
