@@ -173,6 +173,7 @@
                     <marshal id="_marshal408">
                         <json library="Jackson"/>
                     </marshal>
+                    <process id="_process1" ref="killRoute"/>
                 </doCatch>
                 <!-- <doCatch id="_error404"> <exception>java.lang.IllegalArgumentException</exception> 
 					<log id="_log2" message="Error 404 Body : ${body}"/> <bean id="_JsonResultError404" 
