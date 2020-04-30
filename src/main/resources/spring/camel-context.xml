@@ -97,9 +97,9 @@
                 <setProperty id="_keepBody" propertyName="bodyBeforeCallTcpRouter">
                     <simple>${body}</simple>
                 </setProperty>
-                <!-- <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
+                <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
                 <!-- <to id="_to22" uri="netty:tcp://192.168.88.98:49810?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
-                <to id="_to22" uri="netty:tcp://localhost:7000?disconnect=true&amp;keepAlive=false&amp;clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/>
+                <!-- <to id="_to22" uri="netty:tcp://localhost:7000?disconnect=true&amp;keepAlive=false&amp;clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
                 <log id="_log29" message="Body Length After Call HLI : ${body.length}"/>
                 <choice id="_choice3">
                     <when id="_when3">
@@ -160,6 +160,7 @@
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
                     <log id="_log3" message="Error 408 Body : ${body}"/>
+                    <log id="_log9" message="Error Message : ${exception.message}"/>
                     <setBody id="_setBodyError408TcpRouter">
                         <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
                     </setBody>
@@ -179,6 +180,7 @@
                 <doCatch id="_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="_log2" message="Error 404 Body : ${body}"/>
+                    <log id="_log10" message="Error Message : ${exception.message}"/>
                     <bean id="_JsonResultError404"
                         method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format       data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal6">
@@ -195,6 +197,7 @@
                         <flatpack definition="IdmFlconfigIn.xml"
                             fixed="true" ignoreFirstRecord="false"/>
                     </unmarshal>
+                    <log id="_log11" message="Error Message : ${exception.message}"/>
                     <bean id="_JsonResultError093"
                         method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi tidak berhasil'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal093">
