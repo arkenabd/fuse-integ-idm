@@ -75,6 +75,21 @@
         </route>
         <route id="_Integ-IDM">
             <from id="_from4" uri="direct:integ_idm"/>
+            <!-- <onException id="_onException1"> <exception>java.lang.Exception</exception> 
+				<exception>java.lang.IllegalArgumentException</exception> <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception> 
+				<exception>org.apache.camel.ExpressionEvaluationException</exception> <exception>org.apache.camel.CamelExchangeException</exception> 
+				<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception> 
+				<exception>org.apache.camel.InvalidPayloadException</exception> <exception>org.apache.camel.NoTypeConversionAvailableException</exception> 
+				<continued> <constant>false</constant> </continued> <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" 
+				id="_setHeader1"> <constant>500</constant> </setHeader> <setBody id="_setBody2"> 
+				<simple>Internal Server Error</simple> </setBody> </onException> -->
+            <!-- <onException id="_onException1" useOriginalMessage="true"> <exception>java.lang.IllegalArgumentException</exception> 
+				<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception> 
+				<exception>org.apache.camel.ExpressionEvaluationException</exception> <exception>org.apache.camel.CamelExchangeException</exception> 
+				<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception> 
+				<exception>org.apache.camel.InvalidPayloadException</exception> <exception>org.apache.camel.NoTypeConversionAvailableException</exception> 
+				<setBody id="_setBody2"> <simple>Internal Server Error</simple> </setBody> 
+				<process id="_process2" ref="generalError"/> </onException> -->
             <doTry id="_doTry2">
                 <log id="_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <log id="_Current_SeqNum" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
@@ -154,39 +169,48 @@
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
                     <log id="_log3" message="Error 408 Body : ${body}"/>
-                    <log id="_log9" message="Error Message : ${exception.message}"/>
+                    <log id="_log9" message="Error       Message : ${exception.message}"/>
                     <setBody id="_setBodyError408TcpRouter">
                         <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
                     </setBody>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="_setHeader1">
+                        <constant>500</constant>
+                    </setHeader>
                     <unmarshal id="_unmarshal408">
                         <flatpack definition="IdmFlconfigIn.xml"
                             fixed="true" ignoreFirstRecord="false"/>
                     </unmarshal>
                     <bean id="_JsonResultError408"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request Time Out'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request       Time Out'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal408">
                         <json library="Jackson"/>
                     </marshal>
                     <setBody id="_setBody6">
-                        <simple>Response Code : 408</simple>
+                        <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="_log2" message="Error 404 Body : ${body}"/>
                     <log id="_log10" message="Error Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="_setHeader1">
+                        <constant>500</constant>
+                    </setHeader>
                     <bean id="_JsonResultError404"
                         method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format       data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponse"/>
                     <marshal id="_marshal6">
                         <json library="Jackson"/>
                     </marshal>
                     <setBody id="_setBody8">
-                        <simple>Response Code : 404</simple>
+                        <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="_error093">
                     <exception>java.net.ConnectException</exception>
                     <log id="_log4" message="Error 093 Body : ${body}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="_setHeader1">
+                        <constant>500</constant>
+                    </setHeader>
                     <unmarshal id="_unmarshal4">
                         <flatpack definition="IdmFlconfigIn.xml"
                             fixed="true" ignoreFirstRecord="false"/>
@@ -198,7 +222,7 @@
                         <json library="Jackson"/>
                     </marshal>
                     <setBody id="_setBody7">
-                        <simple>Response Code : 093</simple>
+                        <simple/>
                     </setBody>
                 </doCatch>
             </doTry>
@@ -229,4 +253,5 @@
     <bean class="com.json.netty.GenerateCounter" id="generateCounter" scope="singleton"/>
     <bean class="com.json.netty.RefreshCounter" id="refreshCounter" scope="singleton"/>
     <bean class="com.json.netty.KillRoute" id="killRoute" scope="singleton"/>
+    <bean class="com.json.netty.util.GeneralError" id="generalError" scope="singleton"/>
 </beans>
