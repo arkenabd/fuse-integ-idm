@@ -120,12 +120,6 @@
                             <json library="Jackson"/>
                         </marshal>
                     </when>
-                    <when id="_when4">
-                        <simple>${body.length} &lt;= 83</simple>
-                        <setBody id="_setBody2">
-                            <simple>${body}</simple>
-                        </setBody>
-                    </when>
                     <otherwise id="_otherwise3">
                         <log id="_responseHli" message="After Call TCP HLI (from IDM):  ${body}"/>
                         <unmarshal id="_unmarshal3">
@@ -209,6 +203,15 @@
                 </doCatch>
             </doTry>
         </route>
+        <route id="_Quartz">
+            <from id="_to3" uri="quartz:groupName/timerName?cron=0 0 0 1/1 * ? *"/>
+            <to id="_to1" uri="direct:quartzTask"/>
+        </route>
+        <route id="_refresh_Seq">
+            <from id="_to2" uri="direct:quartzTask"/>
+            <log id="_log12" message="This task is triggered from Quartz, for refresh sequence"/>
+            <process id="_refresh_Counter" ref="refreshCounter"/>
+        </route>
     </camelContext>
     <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
     <!-- String to ChannelBuffer/ByteBuf -->
@@ -224,5 +227,6 @@
     <bean class="com.json.netty.pojo.out.IdmMainPojoB"
         id="IdmJsonResponseB" scope="singleton"/>
     <bean class="com.json.netty.GenerateCounter" id="generateCounter" scope="singleton"/>
+    <bean class="com.json.netty.RefreshCounter" id="refreshCounter" scope="singleton"/>
     <bean class="com.json.netty.KillRoute" id="killRoute" scope="singleton"/>
 </beans>
