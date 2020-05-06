@@ -6,7 +6,11 @@
 <PZMAP>
 	<COLUMN name="LENGTH" length="4" />
 	<COLUMN name="SWITCH_CODE" length="4" />
-	<COLUMN name="TIMESTAMP" length="14" />
+	<COLUMN name="TRANSACTION_ID" length="14" />
+	<COLUMN name="TRANSACTION_ID_SEQNUM" length="6" />
+	<COLUMN name="CLIENT_ID_COMMON" length="6" />
+	<COLUMN name="PROCESS_CODE" length="7" />
+	<COLUMN name="TIMESTAMP" length="19" />
 	<COLUMN name="CLIENT_ID" length="10" />
 	<COLUMN name="KEY" length="10" />
 	<COLUMN name="BRANCH_ID" length="4" />
