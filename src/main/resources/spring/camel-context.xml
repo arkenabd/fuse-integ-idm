@@ -125,9 +125,10 @@
 					propertyName="bodyBeforeCallTcpRouter">
 					<simple>${body}</simple>
 				</setProperty>
-				<!-- <to id="_to22" uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
 				<to id="_to22"
-					uri="netty:tcp://192.168.88.98:49810?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true" />
+					uri="netty:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true" />
+				<!-- <to id="_to22" uri="netty:tcp://192.168.88.98:49810?requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true" 
+					/> -->
 				<!-- <to id="_to22" uri="netty:tcp://localhost:7000?disconnect=true&amp;keepAlive=false&amp;clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoder=#stringDecoder&amp;encoder=#stringEncoder&amp;textline=true"/> -->
 				<log id="_log29"
 					message="Body Length After Call HLI : ${body.length}" />
