@@ -34,10 +34,10 @@ public class IdmPreGenerateFixedLength {
 		return RandomStringUtils.randomAlphanumeric(n);
 	}
 
-	public List<Map<String, String>> generate(String Timestamp, String ClientID, String Key, String BranchID,
-			String CounterID, String ProductType, String TrxType, String Detail_TrxId, String Detail_Token,
-			String Detail_noHP, String Detail_Amount, String Timeout, String VersiProgram, String RespCode,
-			String RespDetail, Exchange exchange) {
+	public List<Map<String, String>> generate(String Timestamp, String ClientID, String Key,
+			String BranchID, String CounterID, String ProductType, String TrxType, String Detail_TrxId,
+			String Detail_Token, String Detail_noHP, String Detail_Amount, String Timeout, String VersiProgram,
+			String RespCode, String RespDetail, Exchange exchange) {
 		String existingCounter = exchange.getProperty("counter").toString();
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
@@ -52,7 +52,17 @@ public class IdmPreGenerateFixedLength {
 		map.put("TRANSACTION_ID", StringUtils.rightPad(date, 14, " "));// yyyymmddhhmmss
 		map.put("TRANSACTION_ID_SEQNUM", StringUtils.leftPad(existingCounter, 6, "0"));
 		map.put("CLIENT_ID_COMMON", StringUtils.rightPad("TOKO", 6, " "));
-		map.put("PROCESS_CODE", StringUtils.rightPad("IDMCSHO", 7, " "));
+		// PROCESS_CODE : cashout = IDMCSHO,reversal= IDMREVS, notification= IDMNOTF
+		if (TrxType.equals("CASHOUT")) {
+			map.put("PROCESS_CODE", StringUtils.rightPad("IDMCSHO", 7, " "));
+		}
+		if (TrxType.equals("REVERSAL")) {
+			map.put("PROCESS_CODE", StringUtils.rightPad("IDMREVS", 7, " "));
+		}
+		if (TrxType.equals("NOTIFICATION")) {
+			map.put("PROCESS_CODE", StringUtils.rightPad("IDMNOTF", 7, " "));
+		}
+
 		map.put("TIMESTAMP", StringUtils.rightPad(Timestamp, 19, " "));
 		map.put("CLIENT_ID", StringUtils.rightPad(ClientID, 10, " "));
 		map.put("KEY", StringUtils.rightPad(Key, 10, " "));
