@@ -171,10 +171,27 @@ public class IdmMainPojo {
 		IdmDetail detail = new IdmDetail();
 		detail.setTrxConfirm(detailTrxConfirm.trim());
 		jres.setDetail(detail);
-		jres.setTimeout(timeout.trim());
-		jres.setVersiProgram(versiProgram.trim());
-		jres.setRespCode(respCode.trim());
-		jres.setRespDetail(respDetail.trim());
+		try {
+			jres.setTimeout(timeout.trim());
+		} catch (Exception e) {
+			jres.setTimeout("");
+		}
+		try {
+			jres.setVersiProgram(versiProgram.trim());
+		} catch (Exception e) {
+			jres.setVersiProgram("");
+		}
+		try {
+			jres.setRespCode(respCode.trim());
+		} catch (Exception e) {
+			jres.setRespCode("");
+		}
+		try {
+			jres.setRespDetail(respDetail.trim());
+		} catch (Exception e) {
+			jres.setRespDetail("");
+		}
+
 		return jres;
 	}
 
