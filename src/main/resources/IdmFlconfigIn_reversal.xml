@@ -21,7 +21,7 @@
 	<COLUMN name="DETAIL_TOKEN" length="9" />
 	<COLUMN name="DETAIL_NO_HP" length="15" />
 	<COLUMN name="DETAIL_AMOUNT" length="17" />
-	<!-- <COLUMN name="TIMEOUT" length="2" /> <COLUMN name="VERSI_PROGRAM" length="6" 
-		/> <COLUMN name="RESP_CODE" length="2" /> <COLUMN name="RESP_DETAIL" length="12" 
+	<COLUMN name="TIMEOUT" length="2" />
+	<COLUMN name="VERSI_PROGRAM" length="6" /> <!--<COLUMN name="RESP_CODE" length="2" /> <COLUMN name="RESP_DETAIL" length="12" 
 		/> -->
 </PZMAP> 

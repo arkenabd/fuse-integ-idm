@@ -42,7 +42,7 @@ public class IdmPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("181", 4, "0"));
+		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -68,8 +68,8 @@ public class IdmPreGenerateFixedLength {
 		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
 		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
 
-//		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
-//		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
+		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
+		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
 //		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
 //		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
 
@@ -79,12 +79,13 @@ public class IdmPreGenerateFixedLength {
 
 	public List<Map<String, String>> generateFlReqReversal(String Timestamp, String ClientID, String Key,
 			String BranchID, String CounterID, String ProductType, String TrxType, String Detail_TrxId,
-			String Detail_Token, String Detail_noHP, String Detail_Amount, Exchange exchange) {
+			String Detail_Token, String Detail_noHP, String Detail_Amount, String Timeout, String VersiProgram,
+			String RespCode, String RespDetail, Exchange exchange) {
 		String existingCounter = exchange.getProperty("counter").toString();
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("181", 4, "0"));
+		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -110,8 +111,8 @@ public class IdmPreGenerateFixedLength {
 		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
 		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
 
-//		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
-//		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
+		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
+		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
 //		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
 //		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
 
@@ -127,7 +128,7 @@ public class IdmPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("181", 4, "0"));
+		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -153,8 +154,8 @@ public class IdmPreGenerateFixedLength {
 		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
 		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
 
-//		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
-//		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
+		map.put("TIMEOUT", StringUtils.rightPad(Timeout, 2, " "));
+		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
 //		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
 //		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
 
