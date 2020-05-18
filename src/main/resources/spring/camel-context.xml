@@ -194,21 +194,6 @@
                     <when id="rev_when3">
                         <simple>${body} contains 'Error'</simple>
                         <log id="rev_log5" message="Response from HLI TCP Router:  ${body}"/>
-                        <setProperty id="rev_setProperty1" propertyName="errorMessageTcpRouter">
-                            <simple>${body}</simple>
-                        </setProperty>
-                        <setBody id="rev_setBodyErrorTcpRouter">
-                            <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                        </setBody>
-                        <unmarshal id="rev_unmarshal1">
-                            <flatpack
-                                definition="IdmFlconfigIn_reversal.xml" fixed="true"/>
-                        </unmarshal>
-                        <bean id="rev_JsonResulErrorTcpRouter"
-                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'errorFromTcpRouter','Transaksi tidak berhasil'.${exchangeProperty[errorMessageTcpRouter]})" ref="IdmJsonResponse"/>
-                        <marshal id="rev_marshal1">
-                            <json library="Jackson"/>
-                        </marshal>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2">
                             <constant>500</constant>
@@ -240,51 +225,29 @@
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                    <log id="rev_log" message="Error 408 Body : ${body}"/>
                     <log id="rev_log1" message="Error       Message : ${exception.message}"/>
-                    <setBody id="rev_setBodyError408TcpRouter">
-                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                    </setBody>
-                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader13">
-                        <constant>500</constant>
-                    </setHeader>
                     <unmarshal id="rev_unmarshal408">
                         <flatpack
                             definition="IdmFlconfigIn_reversal.xml"
                             fixed="true" ignoreFirstRecord="false"/>
                     </unmarshal>
-                    <bean id="rev_JsonResultError408"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request       Time Out'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="rev_marshal408">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="rev_setBody6">
                         <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="rev_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
-                    <log id="rev_log2" message="Error 404 Body : ${body}"/>
                     <log id="rev_log10" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader14">
                         <constant>500</constant>
                     </setHeader>
-                    <bean id="rev_JsonResultError404"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format       data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="rev_marshal6">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="rev_setBody8">
                         <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="rev_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
-                    <log id="rev_log3" message="Error Config Flatpack Body : ${body}"/>
                     <log id="rev_log9" message="Error Message: Check Flatpack Configuration File for transaction Reversal : ${exception.message}"/>
-                    <setBody id="rev_errorConfigFlatpack">
-                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                    </setBody>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader134">
                         <constant>500</constant>
                     </setHeader>
@@ -294,21 +257,10 @@
                 </doCatch>
                 <doCatch id="rev_error093">
                     <exception>java.net.ConnectException</exception>
-                    <log id="rev_log4" message="Error 093 Body : ${body}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader1">
                         <constant>500</constant>
                     </setHeader>
-                    <unmarshal id="rev_unmarshal4">
-                        <flatpack
-                            definition="IdmFlconfigIn_reversal.xml"
-                            fixed="true" ignoreFirstRecord="false"/>
-                    </unmarshal>
                     <log id="rev_log11" message="Error Message : ${exception.message}"/>
-                    <bean id="rev_JsonResultError093"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi tidak berhasil'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="rev_marshal093">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="rev_setBody7">
                         <simple/>
                     </setBody>
@@ -357,21 +309,6 @@
                     <when id="notif_when3">
                         <simple>${body} contains 'Error'</simple>
                         <log id="notif_log5" message="Response from HLI TCP Router:  ${body}"/>
-                        <setProperty id="notif_setProperty1" propertyName="errorMessageTcpRouter">
-                            <simple>${body}</simple>
-                        </setProperty>
-                        <setBody id="notif_setBodyErrorTcpRouter">
-                            <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                        </setBody>
-                        <unmarshal id="notif_unmarshal1">
-                            <flatpack
-                                definition="IdmFlconfigIn_notification.xml" fixed="true"/>
-                        </unmarshal>
-                        <bean id="notif_JsonResulErrorTcpRouter"
-                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'errorFromTcpRouter','Transaksi tidak berhasil'.${exchangeProperty[errorMessageTcpRouter]})" ref="IdmJsonResponse"/>
-                        <marshal id="notif_marshal1">
-                            <json library="Jackson"/>
-                        </marshal>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader2">
                             <constant>500</constant>
@@ -403,51 +340,27 @@
                     <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
                     <exception>org.apache.camel.InvalidPayloadException</exception>
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-                    <log id="notif_log" message="Error 408 Body : ${body}"/>
                     <log id="notif_log1" message="Error       Message : ${exception.message}"/>
-                    <setBody id="notif_setBodyError408TcpRouter">
-                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                    </setBody>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader13">
                         <constant>500</constant>
                     </setHeader>
-                    <unmarshal id="notif_unmarshal408">
-                        <flatpack
-                            definition="IdmFlconfigIn_notification.xml"
-                            fixed="true" ignoreFirstRecord="false"/>
-                    </unmarshal>
-                    <bean id="notif_JsonResultError408"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'408','Request       Time Out'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="notif_marshal408">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="notif_setBody6">
                         <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="notif_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
-                    <log id="notif_log2" message="Error 404 Body : ${body}"/>
                     <log id="notif_log10" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader14">
                         <constant>500</constant>
                     </setHeader>
-                    <bean id="notif_JsonResultError404"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format       data salah'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="notif_marshal6">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="notif_setBody8">
                         <simple/>
                     </setBody>
                 </doCatch>
                 <doCatch id="notif_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
-                    <log id="notif_log3" message="Error Config Flatpack Body : ${body}"/>
                     <log id="notif_log9" message="Error Message: Check Flatpack Configuration File for transaction Notification : ${exception.message}"/>
-                    <setBody id="notif_errorConfigFlatpack">
-                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
-                    </setBody>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader134">
                         <constant>500</constant>
                     </setHeader>
@@ -457,21 +370,10 @@
                 </doCatch>
                 <doCatch id="notif_error093">
                     <exception>java.net.ConnectException</exception>
-                    <log id="notif_log4" message="Error 093 Body : ${body}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader1">
                         <constant>500</constant>
                     </setHeader>
-                    <unmarshal id="notif_unmarshal4">
-                        <flatpack
-                            definition="IdmFlconfigIn_notification.xml"
-                            fixed="true" ignoreFirstRecord="false"/>
-                    </unmarshal>
                     <log id="notif_log11" message="Error Message : ${exception.message}"/>
-                    <bean id="notif_JsonResultError093"
-                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi tidak berhasil'. '( ' ${exception.message} ' )' )" ref="IdmJsonResponseB"/>
-                    <marshal id="notif_marshal093">
-                        <json library="Jackson"/>
-                    </marshal>
                     <setBody id="notif_setBody7">
                         <simple/>
                     </setBody>
