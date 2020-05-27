@@ -44,6 +44,7 @@
         </rest>
         <route id="co_cashout">
             <from id="co_from4" uri="direct:cashout"/>
+            <process id="_Init_Strategy_co" ref="killRoute"/>
             <doTry id="co_doTry2">
                 <log id="co_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <convertBodyTo id="co_String" type="java.lang.String"/>
@@ -152,6 +153,7 @@
         </route>
         <route id="rev_reversal">
             <from id="rev_from3" uri="direct:reversal"/>
+            <process id="_Init_Strategy_rev" ref="killRoute"/>
             <doTry id="rev_doTry2">
                 <log id="rev_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <convertBodyTo id="rev_String" type="java.lang.String"/>
@@ -261,6 +263,7 @@
         </route>
         <route id="notif_notification">
             <from id="notif_from5" uri="direct:notification"/>
+            <process id="_Init_Strategy_not" ref="killRoute"/>
             <doTry id="notif_doTry2">
                 <log id="notif_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <convertBodyTo id="notif_String" type="java.lang.String"/>
@@ -410,10 +413,10 @@
         </route>
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter"/>
-            <!-- <to id="notif_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?keepAlive=false&amp;reuseChannel=true&amp;clientMode=true&amp;requestTimeout=10000&amp;textline=true" 
-				/> -->
             <doTry id="_doTry2">
-                <to id="notif_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://localhost:7000?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true" />
+					/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
