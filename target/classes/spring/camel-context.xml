@@ -580,6 +580,15 @@
                     <setBody id="notif_setBody8">
                         <simple/>
                     </setBody>
+                    <unmarshal id="_unmarshal8">
+                        <flatpack definition="IdmFlconfigIn.xml"
+                            fixed="true" ignoreFirstRecord="false"/>
+                    </unmarshal>
+                    <bean id="_bean9"
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'404','Format Data Salah' )" ref="IdmJsonResponseB"/>
+                    <marshal id="_marshal8">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="notif_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
@@ -605,8 +614,95 @@
                     </setHeader>
                     <log id="notif_log11" message="Error Message : ${exception.message}"/>
                     <setBody id="notif_setBody7">
-                        <simple/>
+                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
                     </setBody>
+                    <unmarshal id="_unmarshal9">
+                        <flatpack definition="IdmFlconfigIn.xml"
+                            fixed="true" ignoreFirstRecord="false"/>
+                    </unmarshal>
+                    <bean id="_bean10"
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'093','Transaksi Tidak Berhasil' )" ref="I"/>
+                    <marshal id="_marshal9">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="notif_error091">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader11">
+                        <constant>500</constant>
+                    </setHeader>
+                    <log id="notif_log111" message="Error Message : ${exception.message}"/>
+                    <setBody id="notif_setBody71">
+                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
+                    </setBody>
+                    <unmarshal id="_unmarshal91">
+                        <flatpack definition="IdmFlconfigIn.xml"
+                            fixed="true" ignoreFirstRecord="false"/>
+                    </unmarshal>
+                    <bean id="_bean101"
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'091','Key Toko Tidak Valid' )" ref="I"/>
+                    <marshal id="_marshal91">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="notif_error101">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader101">
+                        <constant>500</constant>
+                    </setHeader>
+                    <log id="notif_log101" message="Error Message : ${exception.message}"/>
+                    <setBody id="notif_setBody101">
+                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
+                    </setBody>
+                    <unmarshal id="_unmarshal101">
+                        <flatpack definition="IdmFlconfigIn.xml"
+                            fixed="true" ignoreFirstRecord="false"/>
+                    </unmarshal>
+                    <bean id="_bean101"
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'101','Maaf Server Sedang Maintenance' )" ref="I"/>
+                    <marshal id="_marshal101">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="notif_error092">
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader92">
+                        <constant>500</constant>
+                    </setHeader>
+                    <log id="notif_log92" message="Error Message : ${exception.message}"/>
+                    <setBody id="notif_setBody92">
+                        <simple>${exchangeProperty[bodyBeforeCallTcpRouter]}</simple>
+                    </setBody>
+                    <unmarshal id="_unmarshal92">
+                        <flatpack definition="IdmFlconfigIn.xml"
+                            fixed="true" ignoreFirstRecord="false"/>
+                    </unmarshal>
+                    <bean id="_bean92"
+                        method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},'',${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},'092','Produk Tidak Dikenal' )" ref="I"/>
+                    <marshal id="_marshal92">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
             </doTry>
         </route>
