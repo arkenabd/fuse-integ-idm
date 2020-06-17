@@ -47,6 +47,9 @@
             <process id="_Init_Strategy_co" ref="killRoute"/>
             <doTry id="co_doTry2">
                 <log id="co_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
+                <setProperty id="_setProperty1" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
                 <convertBodyTo id="co_String" type="java.lang.String"/>
                 <unmarshal id="co_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -84,9 +87,18 @@
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2">
                             <constant>500</constant>
                         </setHeader>
-                        <setBody id="co_setBody2">
-                            <simple/>
+                        <setBody id="hlierr_co_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
                         </setBody>
+                        <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Sserver Error')" ref="IdmJsonResponse"/>
+                        <marshal id="_marshal1">
+                            <json library="Jackson"/>
+                        </marshal>
                     </when>
                     <otherwise id="co_otherwise3">
                         <log id="co_responseHli" message="Response from HLI TCP Router:  ${body}"/>
@@ -113,21 +125,39 @@
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
                     <log id="co_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader13">
-                        <constant>500</constant>
+                        <constant>408</constant>
                     </setHeader>
-                    <setBody id="co_setBody6">
-                        <simple/>
+                    <setBody id="408_co_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="408_co_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="408_co_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="408_co_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponse"/>
+                    <marshal id="408_co_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="co_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="co_log10" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader14">
-                        <constant>500</constant>
+                        <constant>404</constant>
                     </setHeader>
-                    <setBody id="co_setBody8">
-                        <simple/>
+                    <setBody id="404_co_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="404_co_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_co_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_co_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404',${exception.message})" ref="IdmJsonResponse"/>
+                    <marshal id="404_co_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="co_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
@@ -135,19 +165,37 @@
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader134">
                         <constant>500</constant>
                     </setHeader>
-                    <setBody id="co_setBody6errorConfigFlatpack">
-                        <simple/>
+                    <setBody id="Flatpack_co_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="Flatpack_co_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="Flatpack_co_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="Flatpack_co_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404',${exception.message})" ref="IdmJsonResponse"/>
+                    <marshal id="Flatpack_co_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="co_error093">
                     <exception>java.net.ConnectException</exception>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader1">
-                        <constant>500</constant>
+                        <constant>093</constant>
                     </setHeader>
                     <log id="co_log11" message="Error Message : ${exception.message}"/>
-                    <setBody id="co_setBody7">
-                        <simple/>
+                    <setBody id="093_co_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="093_co_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="093_co_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="093_co_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404',${exception.message})" ref="IdmJsonResponse"/>
+                    <marshal id="093_co_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
             </doTry>
         </route>
@@ -156,6 +204,9 @@
             <process id="_Init_Strategy_rev" ref="killRoute"/>
             <doTry id="rev_doTry2">
                 <log id="rev_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
+                <setProperty id="_setProperty2" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
                 <convertBodyTo id="rev_String" type="java.lang.String"/>
                 <unmarshal id="rev_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -193,9 +244,18 @@
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader13">
                             <constant>500</constant>
                         </setHeader>
-                        <setBody id="rev_setBody2">
-                            <simple/>
+                        <setBody id="tcprouter_rev_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
                         </setBody>
+                        <convertBodyTo id="tcprouter_rev_convertBodyTo1" type="java.lang.String"/>
+                        <unmarshal id="tcprouter_rev_unmarshal1">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="tcprouter_rev_bean2"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                        <marshal id="tcprouter_rev_marshal1">
+                            <json library="Jackson"/>
+                        </marshal>
                     </when>
                     <otherwise id="rev_otherwise3">
                         <log id="rev_responseHli" message="Response from HLI TCP Router:  ${body}"/>
@@ -223,21 +283,39 @@
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
                     <log id="rev_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2">
-                        <constant>500</constant>
+                        <constant>408</constant>
                     </setHeader>
-                    <setBody id="rev_setBody6">
-                        <simple/>
+                    <setBody id="408_rev_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="408_rev_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="408_rev_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="408_rev__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="408_rev_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="rev_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="rev_log10" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader14">
-                        <constant>500</constant>
+                        <constant>404</constant>
                     </setHeader>
-                    <setBody id="rev_setBody8">
-                        <simple/>
+                    <setBody id="404_rev_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="404_rev_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_rev_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_rev__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="404_rev_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="rev_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
@@ -245,19 +323,37 @@
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader134">
                         <constant>500</constant>
                     </setHeader>
-                    <setBody id="rev_setBody6errorConfigFlatpack">
-                        <simple/>
+                    <setBody id="errorFlatpack_rev_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="errorFlatpack_rev_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="errorFlatpack_rev_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="errorFlatpack_rev__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="errorFlatpack_rev_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="rev_error093">
                     <exception>java.net.ConnectException</exception>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader1">
-                        <constant>500</constant>
+                        <constant>093</constant>
                     </setHeader>
                     <log id="rev_log11" message="Error Message : ${exception.message}"/>
-                    <setBody id="rev_setBody7">
-                        <simple/>
+                    <setBody id="093_rev_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="093_rev_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="093_rev_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="093_rev__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="093_rev_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
             </doTry>
         </route>
@@ -266,6 +362,9 @@
             <process id="_Init_Strategy_not" ref="killRoute"/>
             <doTry id="notif_doTry2">
                 <log id="notif_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
+                <setProperty id="_setProperty3" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
                 <convertBodyTo id="notif_String" type="java.lang.String"/>
                 <unmarshal id="notif_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -304,9 +403,18 @@
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader2">
                             <constant>500</constant>
                         </setHeader>
-                        <setBody id="notif_setBody2">
-                            <simple/>
+                        <setBody id="tcprouter_not_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
                         </setBody>
+                        <convertBodyTo id="tcprouter_not_convertBodyTo1" type="java.lang.String"/>
+                        <unmarshal id="tcprouter_not_unmarshal1">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="tcprouter_not_bean2"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                        <marshal id="tcprouter_not_marshal1">
+                            <json library="Jackson"/>
+                        </marshal>
                     </when>
                     <otherwise id="notif_otherwise3">
                         <log id="notif_responseHli" message="Response from HLI TCP Router:  ${body}"/>
@@ -333,21 +441,39 @@
                     <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
                     <log id="notif_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader13">
-                        <constant>500</constant>
+                        <constant>408</constant>
                     </setHeader>
-                    <setBody id="notif_setBody6">
-                        <simple/>
+                    <setBody id="408_not_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="408_not_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="408_not_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="408_not_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="408_not_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="notif_error404">
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="notif_log10" message="Error Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader14">
-                        <constant>500</constant>
+                        <constant>404</constant>
                     </setHeader>
-                    <setBody id="notif_setBody8">
-                        <simple/>
+                    <setBody id="404_not_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="404_not_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_not_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_not_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="404_not_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="notif_errorFlatpack">
                     <exception>net.sf.flatpack.InitialisationException</exception>
@@ -355,19 +481,37 @@
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader134">
                         <constant>500</constant>
                     </setHeader>
-                    <setBody id="notif_setBody6errorConfigFlatpack">
-                        <simple/>
+                    <setBody id="errorFlatpack_not_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="errorFlatpack_not_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="errorFlatpack_not_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="errorFlatpack_not_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="errorFlatpack_not_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
                 <doCatch id="notif_error093">
                     <exception>java.net.ConnectException</exception>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notif_setHeader1">
-                        <constant>500</constant>
+                        <constant>093</constant>
                     </setHeader>
                     <log id="notif_log11" message="Error Message : ${exception.message}"/>
-                    <setBody id="notif_setBody7">
-                        <simple/>
+                    <setBody id="093_not_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
                     </setBody>
+                    <convertBodyTo id="093_not_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="093_not_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="093_not_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'408',${exception.message})" ref="IdmJsonResponseB"/>
+                    <marshal id="093_not_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
                 </doCatch>
             </doTry>
         </route>
