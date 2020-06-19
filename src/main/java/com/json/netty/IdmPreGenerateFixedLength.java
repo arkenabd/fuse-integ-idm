@@ -93,7 +93,7 @@ public class IdmPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
+//		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -123,7 +123,14 @@ public class IdmPreGenerateFixedLength {
 		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
 //		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
 //		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
-
+		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()
+				+ map.get("TRANSACTION_ID_SEQNUM").length() + map.get("CLIENT_ID_COMMON").length()
+				+ map.get("PROCESS_CODE").length() + map.get("TIMESTAMP").length() + map.get("CLIENT_ID").length()
+				+ map.get("KEY").length() + map.get("BRANCH_ID").length() + map.get("COUNTER_ID").length()
+				+ map.get("PRODUCT_TYPE").length() + map.get("TRX_TYPE").length() + map.get("DETAIL_TRX_ID").length()
+				+ map.get("DETAIL_TOKEN").length() + map.get("DETAIL_NO_HP").length()
+				+ map.get("DETAIL_AMOUNT").length() + map.get("TIMEOUT").length() + map.get("VERSI_PROGRAM").length();
+		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
 		flResultList.add(map);
 		return flResultList;
 	}
@@ -136,7 +143,7 @@ public class IdmPreGenerateFixedLength {
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
 		Map<String, String> map = new HashMap<>();
-		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
+//		map.put("LENGTH", StringUtils.leftPad("189", 4, "0"));
 		// Generate date with format yyyyMMddHHmmss as TRANSACTION_ID component
 		String pattern = "yyyyMMddHHmmss";
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
@@ -166,7 +173,14 @@ public class IdmPreGenerateFixedLength {
 		map.put("VERSI_PROGRAM", StringUtils.rightPad(VersiProgram, 6, " "));
 //		map.put("RESP_CODE", StringUtils.rightPad(RespCode, 2, " "));
 //		map.put("RESP_DETAIL", StringUtils.rightPad(RespDetail, 12, " "));
-
+		int headerLength = 4 + map.get("SWITCH_CODE").length() + map.get("TRANSACTION_ID").length()
+				+ map.get("TRANSACTION_ID_SEQNUM").length() + map.get("CLIENT_ID_COMMON").length()
+				+ map.get("PROCESS_CODE").length() + map.get("TIMESTAMP").length() + map.get("CLIENT_ID").length()
+				+ map.get("KEY").length() + map.get("BRANCH_ID").length() + map.get("COUNTER_ID").length()
+				+ map.get("PRODUCT_TYPE").length() + map.get("TRX_TYPE").length() + map.get("DETAIL_TRX_ID").length()
+				+ map.get("DETAIL_TOKEN").length() + map.get("DETAIL_NO_HP").length()
+				+ map.get("DETAIL_AMOUNT").length() + map.get("TIMEOUT").length() + map.get("VERSI_PROGRAM").length();
+		map.put("LENGTH", StringUtils.leftPad(String.valueOf(headerLength), 4, "0"));
 		flResultList.add(map);
 		return flResultList;
 	}
