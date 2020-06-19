@@ -58,6 +58,10 @@
                     <custom ref="idm_dataformat"/>
                 </unmarshal>
                 <log id="co_TrxType" message="Transaction Type value : ${body.trxType}"/>
+                <setProperty id="_setProperty2" propertyName="timestamp">
+                    <simple>${body.timestamp}</simple>
+                </setProperty>
+                <process id="_process1" ref="msgValidator"/>
                 <choice id="_choice1_notf">
                     <when id="_when1_co">
                         <simple>${header.CamelHttpUri.toUpperCase()} contains ${body.trxType.toUpperCase()}</simple>
@@ -212,6 +216,7 @@
                     </otherwise>
                 </choice>
                 <doCatch id="co_error404">
+                    <exception>com.json.netty.util.CamelCustomException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="co_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2">
@@ -272,6 +277,10 @@
                     <custom ref="idm_dataformat"/>
                 </unmarshal>
                 <log id="rev_TrxType" message="Transaction Type value : ${body.trxType}"/>
+                <setProperty id="_setProperty2_rev" propertyName="timestamp">
+                    <simple>${body.timestamp}</simple>
+                </setProperty>
+                <process id="_process1_rev" ref="msgValidator"/>
                 <choice id="_choice1">
                     <when id="_when1">
                         <simple>${header.CamelHttpUri.toUpperCase()} contains ${body.trxType.toUpperCase()}</simple>
@@ -427,6 +436,7 @@
                     </otherwise>
                 </choice>
                 <doCatch id="rev_error404">
+                    <exception>com.json.netty.util.CamelCustomException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="rev_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2">
@@ -487,6 +497,10 @@
                     <custom ref="idm_dataformat"/>
                 </unmarshal>
                 <log id="notf_TrxType" message="Transaction Type value : ${body.trxType}"/>
+                <setProperty id="_setProperty2_notf" propertyName="timestamp">
+                    <simple>${body.timestamp}</simple>
+                </setProperty>
+                <process id="_process1_notf" ref="msgValidator"/>
                 <choice id="notf_choice1">
                     <when id="notf_when1">
                         <simple>${header.CamelHttpUri.toUpperCase()} contains ${body.trxType.toUpperCase()}</simple>
@@ -642,6 +656,7 @@
                     </otherwise>
                 </choice>
                 <doCatch id="notf_error404">
+                    <exception>com.json.netty.util.CamelCustomException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="notf_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2">
@@ -747,18 +762,6 @@
                 </doCatch>
             </doTry>
         </route>
-        <route id="_error404">
-            <from id="_from3" uri="direct:err404"/>
-            <convertBodyTo id="404_gen_convertBodyTo1" type="java.lang.String"/>
-            <unmarshal id="404_gen_unmarshal1">
-                <custom ref="idm_dataformat"/>
-            </unmarshal>
-            <bean id="404_geb_bean2"
-                method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404',${exception.message})" ref="IdmJsonResponse"/>
-            <marshal id="404_gen_marshal1">
-                <json library="Jackson"/>
-            </marshal>
-        </route>
     </camelContext>
     <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
     <!-- String to ChannelBuffer/ByteBuf -->
@@ -780,4 +783,5 @@
     <bean class="io.netty.handler.codec.string.StringEncoder" id="string-encoder"/>
     <bean class="com.json.netty.util.GeneralError" id="generalError" scope="singleton"/>
     <bean class="com.json.netty.GetBodyLength" id="getBodyLength" scope="singleton"/>
+    <bean class="com.json.netty.util.MessageValidator" id="msgValidator" scope="singleton"/>
 </beans>
