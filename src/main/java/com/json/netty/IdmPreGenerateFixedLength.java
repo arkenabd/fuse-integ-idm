@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.json.netty.util.CamelCustomException;
+import com.json.netty.util.MessageErrorException;
 
 @Service
 public class IdmPreGenerateFixedLength {
@@ -38,6 +40,7 @@ public class IdmPreGenerateFixedLength {
 			String BranchID, String CounterID, String ProductType, String TrxType, String Detail_TrxId,
 			String Detail_Token, String Detail_noHP, String Detail_Amount, String Timeout, String VersiProgram,
 			String RespCode, String RespDetail, Exchange exchange) {
+
 		String existingCounter = exchange.getProperty("counter").toString();
 		List<Map<String, String>> flResultList = new ArrayList<Map<String, String>>();
 		System.out.println("==============================================");
