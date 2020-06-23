@@ -48,6 +48,7 @@
         <route id="co_cashout">
             <from id="co_from4" uri="direct:cashout"/>
             <process id="_Init_Strategy_co" ref="killRoute"/>
+            <log id="_log4" message="tcprouter.port = {{tcprouter.port}}"/>
             <doTry id="co_doTry2">
                 <log id="co_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
                 <setProperty id="_setProperty1" propertyName="bodyOri">
