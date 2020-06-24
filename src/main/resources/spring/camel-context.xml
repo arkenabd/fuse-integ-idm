@@ -91,7 +91,7 @@
                         <log id="co_log5" message="Response from HLI TCP Router:  ${body}"/>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="err_co_setHeader2">
-                            <constant>101</constant>
+                            <constant>500</constant>
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2">
@@ -131,7 +131,7 @@
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2_errCore">
-                            <simple resultType="int">${exchangeProperty[respCode]}</simple>
+                            <constant>500</constant>
                         </setHeader>
                         <setBody id="hlierr_co_setBody2_errCore">
                             <simple>${exchangeProperty[bodyOri]}</simple>
@@ -191,7 +191,7 @@
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="co_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2">
-                        <constant>404</constant>
+                        <constant>500</constant>
                     </setHeader>
                     <setBody id="404_co_setBody2">
                         <simple>${exchangeProperty[bodyOri]}</simple>
@@ -281,7 +281,7 @@
                         <log id="rev_log5" message="Response from HLI TCP Router:  ${body}"/>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="err_rev_setHeader2">
-                            <constant>101</constant>
+                            <constant>500</constant>
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2_rev">
@@ -321,7 +321,7 @@
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2_errCore">
-                            <simple resultType="int">${exchangeProperty[respCode]}</simple>
+                            <constant>500</constant>
                         </setHeader>
                         <setBody id="hlierr_rev_setBody2_errCore">
                             <simple>${exchangeProperty[bodyOri]}</simple>
@@ -381,7 +381,7 @@
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="rev_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2">
-                        <constant>404</constant>
+                        <constant>500</constant>
                     </setHeader>
                     <setBody id="404_rev_setBody2">
                         <simple>${exchangeProperty[bodyOri]}</simple>
@@ -471,7 +471,7 @@
                         <log id="notf_log5" message="Response from HLI TCP Router:  ${body}"/>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="err_notf_setHeader2">
-                            <constant>101</constant>
+                            <constant>500</constant>
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2_notf">
@@ -511,7 +511,7 @@
                         </setHeader>
                         <setHeader
                             headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2_errCore">
-                            <simple resultType="int">${exchangeProperty[respCode]}</simple>
+                            <constant>500</constant>
                         </setHeader>
                         <setBody id="hlierr_notf_setBody2_errCore">
                             <simple>${exchangeProperty[bodyOri]}</simple>
@@ -571,7 +571,7 @@
                     <exception>java.lang.IllegalArgumentException</exception>
                     <log id="notf_log1" message="Error       Message : ${exception.message}"/>
                     <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2">
-                        <constant>404</constant>
+                        <constant>500</constant>
                     </setHeader>
                     <setBody id="404_notf_setBody2">
                         <simple>${exchangeProperty[bodyOri]}</simple>
