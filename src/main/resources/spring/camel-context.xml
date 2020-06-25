@@ -18,8 +18,8 @@
         </dataFormats>
         <restConfiguration apiContextListing="false"
             apiContextPath="/api-docs" bindingMode="off"
-            component="restlet" contextPath="/hanabank"
-            enableCORS="true" host="0.0.0.0" port="7070">
+            component="restlet" contextPath="/idm" enableCORS="true"
+            host="0.0.0.0" port="7070">
             <!-- setup swagger api descriptions -->
             <apiProperty key="base.path" value="rest"/>
             <apiProperty key="api.version" value="1.0.0"/>
@@ -30,14 +30,14 @@
             <apiProperty key="api.spesification.contentType.yaml" value="application/vnd.oai.openapi;version=2.0"/>
         </restConfiguration>
         <rest id="rest-1e852fc0-7e2d-430c-b111-006050d7428a">
-            <post id="5ba51d35-c0e7-4b17-b65c-b73dbfb01920" uri="/incoming/idm/notification">
+            <post id="5ba51d35-c0e7-4b17-b65c-b73dbfb01920" uri="/notification">
                 <to uri="direct:notification"/>
             </post>
-            <post id="1f0a847b-69b0-4a18-bfb4-e17cfce1d6f9" uri="/incoming/idm/reversal">
+            <post id="1f0a847b-69b0-4a18-bfb4-e17cfce1d6f9" uri="/reversal">
                 <to uri="direct:reversal"/>
             </post>
             <post apiDocs="true" enableCORS="true"
-                id="ea0ae390-bed8-49af-bbee-8256a15f0fe2" uri="/incoming/idm/cashout">
+                id="ea0ae390-bed8-49af-bbee-8256a15f0fe2" uri="/cashout">
                 <to uri="direct:cashout"/>
             </post>
             <get apiDocs="true" enableCORS="true"
