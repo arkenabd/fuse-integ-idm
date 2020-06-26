@@ -17,7 +17,7 @@
 	<COLUMN name="COUNTER_ID" length="4" />
 	<COLUMN name="PRODUCT_TYPE" length="10" />
 	<COLUMN name="TRX_TYPE" length="30" />
-	<COLUMN name="DETAIL_TRX_CONFIRM" length="12" />
+	<COLUMN name="DETAIL_TRX_CONFIRM" length="20" />
 	<COLUMN name="TIMEOUT" length="2" />
 	<COLUMN name="VERSI_PROGRAM" length="6" />
 	<COLUMN name="RESP_CODE" length="3" />
