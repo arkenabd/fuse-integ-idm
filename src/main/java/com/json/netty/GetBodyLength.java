@@ -10,7 +10,7 @@ public class GetBodyLength implements Processor {
 		// TODO Auto-generated method stub
 		String body = (String) exchange.getIn().getBody();
 		int bodyLength = body.length();
-		bodyLength = bodyLength - 1;
+		bodyLength = bodyLength;
 		exchange.setProperty("bodyLength", bodyLength);
 	}
 

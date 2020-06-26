@@ -169,21 +169,25 @@ public class IdmMainPojoB {
 		try {
 			jres.setTimeout(timeout.trim());
 		} catch (Exception e) {
+			e.printStackTrace();
 			jres.setTimeout("");
 		}
 		try {
 			jres.setVersiProgram(versiProgram.trim());
 		} catch (Exception e) {
+			e.printStackTrace();
 			jres.setVersiProgram("");
 		}
 		try {
 			jres.setRespCode(respCode.trim());
 		} catch (Exception e) {
+			e.printStackTrace();
 			jres.setRespCode("");
 		}
 		try {
 			jres.setRespDetail(respDetail.trim());
 		} catch (Exception e) {
+			e.printStackTrace();
 			jres.setRespDetail("");
 		}
 		return jres;
