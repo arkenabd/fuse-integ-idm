@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
-    <bean class="java.util.Properties" id="myProperties"/>
-    <bean
-        class="org.apache.camel.component.properties.PropertiesComponent" id="properties">
-        <property name="cache" value="false"/>
-        <property name="location" value="classpath:application.properties"/>
-        <property name="overrideProperties" ref="myProperties"/>
-    </bean>
+    
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -444,7 +438,7 @@
                 <setProperty id="notf_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="notf_to4" uri="direct:getseqnum"/>
+                <to id="notf_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
                 <setProperty id="notf_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
@@ -617,12 +611,9 @@
             </doTry>
         </route>
         <route id="_get_Seq">
-            <from id="_from31" uri="direct:getseqnum"/>
-            <log id="_Current_SeqNum" message="Sequence number from value ${properties:test} to value (${properties:test} + 1)"/>
-            <setProperty id="_SeqNum" propertyName="counter">
-                <simple>${properties:test}</simple>
-            </setProperty>
-            <bean id="_bean1" ref="generateCounter"/>
+            <from id="_from31" uri="seda:getseqnum?exchangePattern=InOut"/>
+            <log id="_log5" message="Current Seq : ${exchangeProperty[counter]}"/>
+            <bean id="_bean1" method="getSequence('getSequence')" ref="generateCounter"/>
             <log id="_New_SeqNum" message="New value is ${body}"/>
         </route>
         <route id="_Quartz">
@@ -632,7 +623,7 @@
         <route id="_refresh_Seq">
             <from id="_to2" uri="direct:quartzTask"/>
             <log id="_log12" message="This task is triggered from Quartz, for refresh sequence"/>
-            <process id="_refresh_Counter" ref="refreshCounter"/>
+            <bean id="_bean4" method="resetSequence('resetSequence')" ref="generateCounter"/>
         </route>
         <route id="_GET">
             <from id="_from1" uri="direct:get"/>
