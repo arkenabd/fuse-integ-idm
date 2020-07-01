@@ -139,7 +139,7 @@
                         </marshal>
                     </when>
                     <when id="_when4_rev">
-                        <simple>${body.substring(0,4)} == '0181'</simple>
+                        <simple>${body.substring(0,4)} == '0189'</simple>
                         <log id="co_responseHli" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="co_unmarshal3">
                             <flatpack
