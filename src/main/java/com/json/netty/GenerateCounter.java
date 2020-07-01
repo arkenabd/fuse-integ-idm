@@ -14,10 +14,9 @@ public class GenerateCounter {
 
 	}
 	
-	public int resetSequence(String input,Exchange exchange) throws Exception {
+	public void resetSequence(String input,Exchange exchange) throws Exception {
 
-		newCounter = 1;
-		return newCounter;
+		newCounter = 0;
 
 	}
 

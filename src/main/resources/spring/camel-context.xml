@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
-    
     <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
@@ -58,7 +57,7 @@
                 <setProperty id="co_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="co_to4" uri="direct:getseqnum"/>
+                <to id="co_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
                 <setProperty id="co_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
@@ -248,7 +247,7 @@
                 <setProperty id="rev_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="rev_to4" uri="direct:getseqnum"/>
+                <to id="rev_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
                 <setProperty id="rev_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
