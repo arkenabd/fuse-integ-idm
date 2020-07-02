@@ -654,6 +654,9 @@
                 <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?clientMode=true&amp;disconnectOnNoReply=false&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
+                    <exception>java.io.IOException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <exception>java.lang.ClassCastException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
                     <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
                     <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
