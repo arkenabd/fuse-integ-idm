@@ -118,7 +118,7 @@ public class IdmPreGenerateFixedLength {
 		map.put("PRODUCT_TYPE", StringUtils.rightPad(ProductType, 10, " "));
 		map.put("TRX_TYPE", StringUtils.rightPad(TrxType, 30, " "));
 		map.put("DETAIL_TRX_ID", StringUtils.rightPad(Detail_TrxId, 12, " "));
-		map.put("DETAIL_TOKEN", StringUtils.rightPad(Detail_Token, 9, " "));
+		map.put("DETAIL_TOKEN", StringUtils.rightPad(Detail_Token, 10, " "));
 		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
 		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
 
@@ -168,7 +168,7 @@ public class IdmPreGenerateFixedLength {
 		map.put("PRODUCT_TYPE", StringUtils.rightPad(ProductType, 10, " "));
 		map.put("TRX_TYPE", StringUtils.rightPad(TrxType, 30, " "));
 		map.put("DETAIL_TRX_ID", StringUtils.rightPad(Detail_TrxId, 12, " "));
-		map.put("DETAIL_TOKEN", StringUtils.rightPad(Detail_Token, 9, " "));
+		map.put("DETAIL_TOKEN", StringUtils.rightPad(Detail_Token, 10, " "));
 		map.put("DETAIL_NO_HP", StringUtils.rightPad(Detail_noHP, 15, " "));
 		map.put("DETAIL_AMOUNT", StringUtils.rightPad(Detail_Amount, 17, " "));
 
