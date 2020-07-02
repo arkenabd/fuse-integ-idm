@@ -56,7 +56,7 @@
                 <setProperty id="co_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="co_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
+                <to id="co_to4" uri="direct:getseqnum"/>
                 <setProperty id="co_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
@@ -199,6 +199,7 @@
                     </marshal>
                 </doCatch>
                 <doCatch id="co_errorGeneral">
+                <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
                     <exception>java.lang.ClassCastException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
@@ -246,7 +247,7 @@
                 <setProperty id="rev_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="rev_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
+                <to id="rev_to4" uri="direct:getseqnum"/>
                 <setProperty id="rev_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
@@ -389,6 +390,7 @@
                     </marshal>
                 </doCatch>
                 <doCatch id="rev_errorGeneral">
+                    <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
                     <exception>java.lang.ClassCastException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
@@ -436,7 +438,7 @@
                 <setProperty id="notf_setProperty3" propertyName="bodyBeforeCallGetSeqNum">
                     <simple>${body}</simple>
                 </setProperty>
-                <to id="notf_to4" uri="seda:getseqnum?exchangePattern=InOut"/>
+                <to id="notf_to4" uri="direct:getseqnum"/>
                 <setProperty id="notf_setProperty2" propertyName="counter">
                     <simple>${body}</simple>
                 </setProperty>
@@ -579,6 +581,7 @@
                     </marshal>
                 </doCatch>
                 <doCatch id="notf_errorGeneral">
+                    <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
                     <exception>java.lang.ClassCastException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
@@ -609,7 +612,7 @@
             </doTry>
         </route>
         <route id="_get_Seq">
-            <from id="_from31" uri="seda:getseqnum?exchangePattern=InOut"/>
+            <from id="_from31" uri="direct:getseqnum"/>
             <log id="_log5" message="Current Seq : ${exchangeProperty[counter]}"/>
             <bean id="_bean1" method="getSequence('getSequence')" ref="generateCounter"/>
             <log id="_New_SeqNum" message="New value is ${body}"/>
