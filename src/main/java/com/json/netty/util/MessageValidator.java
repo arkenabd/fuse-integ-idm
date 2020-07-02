@@ -36,6 +36,9 @@ public class MessageValidator {
 			}
 
 		}
+		//validasi token
+		
+		
 		if (isError == true) {
 			String errMsg = "";
 			for (int i = 0; i < errorList.size(); i++) {
@@ -43,5 +46,7 @@ public class MessageValidator {
 			}
 			throw new MessageErrorException(errMsg);
 		}
+		
+		
 	}
 }
