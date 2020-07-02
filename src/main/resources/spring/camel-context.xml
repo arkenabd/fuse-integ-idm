@@ -199,7 +199,7 @@
                     </marshal>
                 </doCatch>
                 <doCatch id="co_errorGeneral">
-                <exception>java.io.IOException</exception>
+                    <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
                     <exception>java.lang.ClassCastException</exception>
                     <exception>java.lang.IllegalArgumentException</exception>
@@ -651,7 +651,7 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?clientMode=true&amp;disconnectOnNoReply=false&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?clientMode=true&amp;disconnectOnNoReply=false&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.lang.IllegalArgumentException</exception>
