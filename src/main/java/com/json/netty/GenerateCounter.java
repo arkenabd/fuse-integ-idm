@@ -20,6 +20,7 @@ public class GenerateCounter {
 		System.out.println(date);
 		String value = StringUtils.rightPad(date, 14, " ") + StringUtils.leftPad(String.valueOf(newCounter), 6, "0");
 		exchange.setProperty("transId", value);
+		System.out.println("Trans ID : " + value);
 	}
 
 	public void resetSequence(String input, Exchange exchange) throws Exception {
