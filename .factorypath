@@ -142,4 +142,7 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/quartz-scheduler/quartz/1.8.6/quartz-1.8.6.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-saxon/2.21.0.fuse-750033-redhat-00001/camel-saxon-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/saxon/Saxon-HE/9.8.0-8/Saxon-HE-9.8.0-8.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-ftp/2.21.0.fuse-750033-redhat-00001/camel-ftp-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/jcraft/jsch/0.1.54.redhat-00001/jsch-0.1.54.redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-net/commons-net/3.6/commons-net-3.6.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
