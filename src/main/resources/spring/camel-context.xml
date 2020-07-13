@@ -10,7 +10,7 @@
         <property name="minThreads" value="1"/>
         <property name="threadMaxIdleTimeMs" value="60000"/>
     </bean>
-    <camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+    <camelContext id="camel" streamCache="true" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <json allowJmsType="true" allowUnmarshallType="true"
                 contentTypeHeader="false"
@@ -60,6 +60,9 @@
                 <setProperty id="co_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
+                <setProperty id="_setProperty2" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <wireTap id="co_wireTap1" uri="direct:generatelog"/>
                 <convertBodyTo id="co_String" type="java.lang.String"/>
                 <unmarshal id="co_input_to_pojo">
@@ -78,16 +81,22 @@
                     <simple>${body}</simple>
                 </setProperty>
                 <log id="co_log14" message="Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty3" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <setProperty id="co_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="co_wireTap2" uri="direct:generatelog"/>
                 <to id="co_to22" uri="direct:hlitcprouter?block=false"/>
+                <process id="co_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty6" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="co_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="co_wireTap3" uri="direct:generatelog"/>
-                <process id="co_Check bodyLength" ref="getBodyLength"/>
                 <log id="co_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="co_choice3">
                     <when id="co_when3">
@@ -115,7 +124,7 @@
                         </marshal>
                     </when>
                     <when id="_when1_errCore_rev">
-                        <simple>${body.substring(0,4)} == '0074'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '0074'</simple>
                         <log id="_log2_errCore" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="_unmarshal2">
                             <flatpack
@@ -151,7 +160,7 @@
                         </marshal>
                     </when>
                     <when id="_when4_rev">
-                        <simple>${body.substring(0,4)} == '0189'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '0189'</simple>
                         <log id="co_responseHli" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="co_unmarshal3">
                             <flatpack
@@ -189,6 +198,9 @@
                         </marshal>
                     </otherwise>
                 </choice>
+                <setProperty id="_setProperty7" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="co_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
@@ -255,6 +267,9 @@
                 </setProperty>
                 <to id="rev_to4" uri="direct:getseqnum"/>
                 <log id="rev_log13" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
+                <setProperty id="_setProperty8" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <setProperty id="rev_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
@@ -276,16 +291,22 @@
                     <simple>${body}</simple>
                 </setProperty>
                 <log id="rev_log14" message="Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty9" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <setProperty id="rev_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="rev_wireTap2" uri="direct:generatelog"/>
                 <to id="rev_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
+                <process id="rev_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty10" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="rev_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="rev_wireTap3" uri="direct:generatelog"/>
-                <process id="rev_Check bodyLength" ref="getBodyLength"/>
                 <log id="rev_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="rev_choice3">
                     <when id="rev_when3">
@@ -387,6 +408,9 @@
                         </marshal>
                     </otherwise>
                 </choice>
+                <setProperty id="_setProperty11" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="rev_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
@@ -453,6 +477,9 @@
                 </setProperty>
                 <to id="notf_to4" uri="direct:getseqnum"/>
                 <log id="notf_log13" message="GET Sequence number value : ${exchangeProperty[counter]}"/>
+                <setProperty id="_setProperty15" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <setProperty id="notf_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
@@ -474,16 +501,22 @@
                     <simple>${body}</simple>
                 </setProperty>
                 <log id="notf_log14" message="Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty14" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
                 <setProperty id="notf_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="notf_wireTap2" uri="direct:generatelog"/>
                 <to id="notf_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
+                <process id="notf_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty13" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="notf_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
                 <wireTap id="notf_wireTap3" uri="direct:generatelog"/>
-                <process id="notf_Check bodyLength" ref="getBodyLength"/>
                 <log id="notf_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="notf_choice3">
                     <when id="notf_when3">
@@ -585,6 +618,9 @@
                         </marshal>
                     </otherwise>
                 </choice>
+                <setProperty id="_setProperty12" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
                 <setProperty id="notf_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
@@ -681,7 +717,7 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter?block=false"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.io.IOException</exception>
@@ -702,7 +738,7 @@
         <route id="_generate_log">
             <from id="_from3" uri="direct:generatelog"/>
             <transform id="_cashout_log_1_transform">
-                <simple>Transaction Id : ${exchangeProperty[transId]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
+                <simple>Transaction Id : ${exchangeProperty[transId]}\nMessage Type : ${exchangeProperty[messageType]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
             </transform>
             <choice id="_choice1">
                 <when id="_json_log">
