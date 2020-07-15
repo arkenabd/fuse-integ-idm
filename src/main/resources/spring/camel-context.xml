@@ -63,7 +63,7 @@
                 <setProperty id="_setProperty2" propertyName="messageType">
                     <simple>Request</simple>
                 </setProperty>
-                <wireTap id="co_wireTap1" uri="direct:generatelog"/>
+                <!-- <wireTap id="co_wireTap1" uri="direct:generatelog"/> -->
                 <convertBodyTo id="co_String" type="java.lang.String"/>
                 <unmarshal id="co_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -87,7 +87,7 @@
                 <setProperty id="co_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="co_wireTap2" uri="direct:generatelog"/>
+                <!-- <wireTap id="co_wireTap2" uri="direct:generatelog"/> -->
                 <to id="co_to22" uri="direct:hlitcprouter?block=false"/>
                 <process id="co_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty6" propertyName="messageType">
@@ -96,7 +96,7 @@
                 <setProperty id="co_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="co_wireTap3" uri="direct:generatelog"/>
+                <!--  <wireTap id="co_wireTap3" uri="direct:generatelog"/> -->
                 <log id="co_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="co_choice3">
                     <when id="co_when3">
@@ -204,7 +204,7 @@
                 <setProperty id="co_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <wireTap id="co_wireTap4" uri="direct:generatelog"/>
+                <!-- <wireTap id="co_wireTap4" uri="direct:generatelog"/> -->
                 <doCatch id="co_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -273,7 +273,7 @@
                 <setProperty id="rev_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <wireTap id="rev_wireTap1" uri="direct:generatelog"/>
+                <!-- <wireTap id="rev_wireTap1" uri="direct:generatelog"/> -->
                 <convertBodyTo id="rev_String" type="java.lang.String"/>
                 <unmarshal id="rev_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -297,7 +297,7 @@
                 <setProperty id="rev_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="rev_wireTap2" uri="direct:generatelog"/>
+                <!-- <wireTap id="rev_wireTap2" uri="direct:generatelog"/> -->
                 <to id="rev_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
                 <process id="rev_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty10" propertyName="messageType">
@@ -306,7 +306,7 @@
                 <setProperty id="rev_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="rev_wireTap3" uri="direct:generatelog"/>
+                <!-- <wireTap id="rev_wireTap3" uri="direct:generatelog"/> -->
                 <log id="rev_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="rev_choice3">
                     <when id="rev_when3">
@@ -414,7 +414,7 @@
                 <setProperty id="rev_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <wireTap id="rev_wireTap4" uri="direct:generatelog"/>
+                <!-- <wireTap id="rev_wireTap4" uri="direct:generatelog"/> -->
                 <doCatch id="rev_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -483,7 +483,7 @@
                 <setProperty id="notf_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <wireTap id="notf_wireTap1" uri="direct:generatelog"/>
+                <!-- <wireTap id="notf_wireTap1" uri="direct:generatelog"/> -->
                 <convertBodyTo id="notf_String" type="java.lang.String"/>
                 <unmarshal id="notf_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -507,7 +507,7 @@
                 <setProperty id="notf_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="notf_wireTap2" uri="direct:generatelog"/>
+                <!-- <wireTap id="notf_wireTap2" uri="direct:generatelog"/> -->
                 <to id="notf_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
                 <process id="notf_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty13" propertyName="messageType">
@@ -516,7 +516,7 @@
                 <setProperty id="notf_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <wireTap id="notf_wireTap3" uri="direct:generatelog"/>
+                <!-- <wireTap id="notf_wireTap3" uri="direct:generatelog"/> -->
                 <log id="notf_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="notf_choice3">
                     <when id="notf_when3">
@@ -624,7 +624,7 @@
                 <setProperty id="notf_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <wireTap id="notf_wireTap4" uri="direct:generatelog"/>
+                <!-- <wireTap id="notf_wireTap4" uri="direct:generatelog"/> -->
                 <doCatch id="notf_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -717,7 +717,7 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter?block=false"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;synchronous=true&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.io.IOException</exception>
