@@ -717,7 +717,7 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="direct:hlitcprouter?block=false"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;synchronous=true&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true&amp;backlog=1000&amp;bossCount=100"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;synchronous=true&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
                 <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.io.IOException</exception>
