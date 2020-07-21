@@ -61,17 +61,11 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-http4-starter/2.21.0.fuse-750033-redhat-00001/camel-http4-starter-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-http4/2.21.0.fuse-750033-redhat-00001/camel-http4-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpclient/4.5.5/httpclient-4.5.5.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-restlet/2.22.2/camel-restlet-2.22.2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpcore/4.4.9/httpcore-4.4.9.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-restlet/2.21.0.fuse-750033-redhat-00001/camel-restlet-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-http-common/2.21.0.fuse-750033-redhat-00001/camel-http-common-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/javax/servlet/javax.servlet-api/4.0.1/javax.servlet-api-4.0.1.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/restlet/jee/org.restlet/2.3.12/org.restlet-2.3.12.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/restlet/jee/org.restlet.ext.httpclient/2.3.12/org.restlet.ext.httpclient-2.3.12.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-codec/commons-codec/1.10/commons-codec-1.10.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpcore/4.4.9/httpcore-4.4.9.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/httpcomponents/httpmime/4.5.5/httpmime-4.5.5.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/net/jcip/jcip-annotations/1.0/jcip-annotations-1.0.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/commons-logging/commons-logging/1.2.0.redhat-3/commons-logging-1.2.0.redhat-3.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/james/apache-mime4j-core/0.7.2/apache-mime4j-core-0.7.2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-netty4/2.21.0.fuse-750033-redhat-00001/camel-netty4-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-all/4.1.42.Final/netty-all-4.1.42.Final.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/commons-pool/commons-pool/1.6/commons-pool-1.6.jar" enabled="true" runInBatchMode="false"/>
@@ -86,7 +80,6 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/com/fasterxml/woodstox/woodstox-core/5.0.3.redhat-1/woodstox-core-5.0.3.redhat-1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.8.11/jackson-jaxrs-json-provider-2.8.11.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.8.11/jackson-jaxrs-base-2.8.11.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/18.0/guava-18.0.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/swagger/swagger-core/1.5.18.fuse70-1-redhat-1/swagger-core-1.5.18.fuse70-1-redhat-1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/swagger/swagger-models/1.5.18.fuse70-1-redhat-1/swagger-models-1.5.18.fuse70-1-redhat-1.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/io/swagger/swagger-annotations/1.5.18.fuse70-1-redhat-1/swagger-annotations-1.5.18.fuse70-1-redhat-1.jar" enabled="true" runInBatchMode="false"/>
@@ -113,7 +106,6 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-jms/4.3.25.RELEASE/spring-jms-4.3.25.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-messaging/4.3.25.RELEASE/spring-messaging-4.3.25.RELEASE.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/springframework/spring-tx/4.3.25.RELEASE/spring-tx-4.3.25.RELEASE.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-jms_2.0_spec/1.0.0.alpha-2-redhat-2/geronimo-jms_2.0_spec-1.0.0.alpha-2-redhat-2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-jms_1.1_spec/1.1.1.redhat-2/geronimo-jms_1.1_spec-1.1.1.redhat-2.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-flatpack/2.21.0.fuse-750033-redhat-00001/camel-flatpack-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/net/sf/flatpack/flatpack/3.4.3/flatpack-3.4.3.jar" enabled="true" runInBatchMode="false"/>
@@ -145,4 +137,37 @@
     <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/camel/camel-ftp/2.21.0.fuse-750033-redhat-00001/camel-ftp-2.21.0.fuse-750033-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/com/jcraft/jsch/0.1.54.redhat-00001/jsch-0.1.54.redhat-00001.jar" enabled="true" runInBatchMode="false"/>
     <factorypathentry kind="VARJAR" id="M2_REPO/commons-net/commons-net/3.6/commons-net-3.6.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-broker/5.11.0.redhat-630416/activemq-broker-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-openwire-legacy/5.11.0.redhat-630416/activemq-openwire-legacy-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/com/google/guava/guava/18.0/guava-18.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-client/5.11.0.redhat-630416/activemq-client-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/fusesource/hawtbuf/hawtbuf/1.11.0.redhat-2/hawtbuf-1.11.0.redhat-2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-j2ee-management_1.1_spec/1.0.1.redhat-3/geronimo-j2ee-management_1.1_spec-1.0.1.redhat-3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-jms-pool/5.11.0.redhat-630416/activemq-jms-pool-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-jta_1.0.1B_spec/1.0.1/geronimo-jta_1.0.1B_spec-1.0.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-pool/5.11.0.redhat-630416/activemq-pool-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-spring/5.11.0.redhat-630416/activemq-spring-5.11.0.redhat-630416.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/xbean/xbean-spring/4.5/xbean-spring-4.5.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/activemq-camel/5.11.0/activemq-camel-5.11.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/artemis-jms-client/2.4.0/artemis-jms-client-2.4.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/artemis-core-client/2.9.0.redhat-00005/artemis-core-client-2.9.0.redhat-00005.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/jgroups/jgroups/3.6.13.Final-redhat-2/jgroups-3.6.13.Final-redhat-2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/artemis-commons/2.9.0.redhat-00005/artemis-commons-2.9.0.redhat-00005.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-beanutils/commons-beanutils/1.9.3/commons-beanutils-1.9.3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-logging/commons-logging/1.2.0.redhat-3/commons-logging-1.2.0.redhat-3.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-json_1.0_spec/1.0.0.alpha-1-redhat-1/geronimo-json_1.0_spec-1.0.0.alpha-1-redhat-1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/johnzon/johnzon-core/1.1.0/johnzon-core-1.1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-epoll/4.1.32.Final-redhat-00001/netty-transport-native-epoll-4.1.32.Final-redhat-00001-linux-x86_64.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-unix-common/4.1.32.Final-redhat-00001/netty-transport-native-unix-common-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport-native-kqueue/4.1.32.Final-redhat-00001/netty-transport-native-kqueue-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec-http/4.1.32.Final-redhat-00001/netty-codec-http-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-buffer/4.1.32.Final-redhat-00001/netty-buffer-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-transport/4.1.32.Final-redhat-00001/netty-transport-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-resolver/4.1.32.Final-redhat-00001/netty-resolver-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-handler/4.1.32.Final-redhat-00001/netty-handler-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-codec/4.1.32.Final-redhat-00001/netty-codec-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/io/netty/netty-common/4.1.32.Final-redhat-00001/netty-common-4.1.32.Final-redhat-00001.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/activemq/artemis-selector/2.9.0.redhat-00005/artemis-selector-2.9.0.redhat-00005.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="VARJAR" id="M2_REPO/org/apache/geronimo/specs/geronimo-jms_2.0_spec/1.0.0.alpha-2-redhat-2/geronimo-jms_2.0_spec-1.0.0.alpha-2-redhat-2.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>

@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="jmsConnectionFactory">
+        <property name="brokerURL" value="tcp://192.168.88.230:30728"/>
+        <property name="userName" value="usermMq"/>
+        <property name="password" value="HBDEMKuw"/>
+        <!-- <property name="brokerURL" value="tcp://localhost:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/> -->
+    </bean>
+    <bean class="org.apache.camel.component.jms.JmsConfiguration" id="jmsConfig">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="transacted" value="false"/>
+        <property name="concurrentConsumers" value="100"/>
+    </bean>
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq"/>
     <bean class="org.restlet.Component" id="restletComponent"/>
     <bean class="org.apache.camel.component.restlet.RestletComponent" id="restlet">
         <constructor-arg index="0">
@@ -48,7 +62,7 @@
             </get>
         </rest>
         <route delayer="1" id="co_cashout">
-            <from id="co_from4" uri="direct:cashout?block=false"/>
+            <from id="co_from4" uri="direct:cashout?block=false&amp;timeout=60000"/>
             <process id="_Init_Strategy_co" ref="killRoute"/>
             <doTry id="co_doTry2">
                 <log id="co_input_msg" message="Input Message : ${body} , Header username : ${header.username}"/>
@@ -63,7 +77,7 @@
                 <setProperty id="_setProperty2" propertyName="messageType">
                     <simple>Request</simple>
                 </setProperty>
-                <!-- <wireTap id="co_wireTap1" uri="direct:generatelog"/> -->
+                <wireTap id="co_wireTap1" uri="direct:generatelog"/>
                 <convertBodyTo id="co_String" type="java.lang.String"/>
                 <unmarshal id="co_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -87,8 +101,9 @@
                 <setProperty id="co_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!-- <wireTap id="co_wireTap2" uri="direct:generatelog"/> -->
-                <to id="co_to22" uri="direct:hlitcprouter?block=false"/>
+                <wireTap id="co_wireTap2" uri="direct:generatelog"/>
+                <to id="co_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean5" ref="getAmqData"/>
                 <process id="co_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty6" propertyName="messageType">
                     <simple>Response</simple>
@@ -96,7 +111,7 @@
                 <setProperty id="co_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!--  <wireTap id="co_wireTap3" uri="direct:generatelog"/> -->
+                <wireTap id="co_wireTap3" uri="direct:generatelog"/>
                 <log id="co_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="co_choice3">
                     <when id="co_when3">
@@ -124,7 +139,7 @@
                         </marshal>
                     </when>
                     <when id="_when1_errCore_rev">
-                        <simple>${exchangeProperty[bodyLength]} == '0074'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
                         <log id="_log2_errCore" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="_unmarshal2">
                             <flatpack
@@ -160,7 +175,7 @@
                         </marshal>
                     </when>
                     <when id="_when4_rev">
-                        <simple>${exchangeProperty[bodyLength]} == '0189'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
                         <log id="co_responseHli" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="co_unmarshal3">
                             <flatpack
@@ -169,7 +184,7 @@
                         </unmarshal>
                         <log id="co_log6" message="Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
                         <bean id="co_JsonResult"
-                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},'sukses')" ref="IdmJsonResponse"/>
+                            method="assignValue(${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponse"/>
                         <marshal id="co_marshal5">
                             <json library="Jackson"/>
                         </marshal>
@@ -204,7 +219,7 @@
                 <setProperty id="co_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <!-- <wireTap id="co_wireTap4" uri="direct:generatelog"/> -->
+                <wireTap id="co_wireTap4" uri="direct:generatelog"/>
                 <doCatch id="co_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -273,7 +288,7 @@
                 <setProperty id="rev_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <!-- <wireTap id="rev_wireTap1" uri="direct:generatelog"/> -->
+                <wireTap id="rev_wireTap1" uri="direct:generatelog"/>
                 <convertBodyTo id="rev_String" type="java.lang.String"/>
                 <unmarshal id="rev_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -297,8 +312,9 @@
                 <setProperty id="rev_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!-- <wireTap id="rev_wireTap2" uri="direct:generatelog"/> -->
-                <to id="rev_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
+                <wireTap id="rev_wireTap2" uri="direct:generatelog"/>
+                <to id="rev_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean6" ref="getAmqData"/>
                 <process id="rev_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty10" propertyName="messageType">
                     <simple>Response</simple>
@@ -306,7 +322,7 @@
                 <setProperty id="rev_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!-- <wireTap id="rev_wireTap3" uri="direct:generatelog"/> -->
+                <wireTap id="rev_wireTap3" uri="direct:generatelog"/>
                 <log id="rev_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="rev_choice3">
                     <when id="rev_when3">
@@ -334,7 +350,7 @@
                         </marshal>
                     </when>
                     <when id="_when1_errCore">
-                        <simple>${body.substring(0,4)} == '0074'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
                         <log id="_log2_errCore_rev" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="_unmarshal2_rev">
                             <flatpack
@@ -370,7 +386,7 @@
                         </marshal>
                     </when>
                     <when id="_when4_notf">
-                        <simple>${body.substring(0,4)} == '0189'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
                         <log id="rev_responseHli" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="rev_unmarshal3">
                             <flatpack
@@ -414,7 +430,7 @@
                 <setProperty id="rev_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <!-- <wireTap id="rev_wireTap4" uri="direct:generatelog"/> -->
+                <wireTap id="rev_wireTap4" uri="direct:generatelog"/>
                 <doCatch id="rev_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -483,7 +499,7 @@
                 <setProperty id="notf_setProperty_flowLog1" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <!-- <wireTap id="notf_wireTap1" uri="direct:generatelog"/> -->
+                <wireTap id="notf_wireTap1" uri="direct:generatelog"/>
                 <convertBodyTo id="notf_String" type="java.lang.String"/>
                 <unmarshal id="notf_input_to_pojo">
                     <custom ref="idm_dataformat"/>
@@ -507,8 +523,9 @@
                 <setProperty id="notf_setProperty_flowLog2" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!-- <wireTap id="notf_wireTap2" uri="direct:generatelog"/> -->
-                <to id="notf_to22" uri="direct:hlitcprouter?exchangePattern=InOut"/>
+                <wireTap id="notf_wireTap2" uri="direct:generatelog"/>
+                <to id="notf_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean7" ref="getAmqData"/>
                 <process id="notf_Check bodyLength" ref="getBodyLength"/>
                 <setProperty id="_setProperty13" propertyName="messageType">
                     <simple>Response</simple>
@@ -516,7 +533,7 @@
                 <setProperty id="notf_setProperty_flowLog3" propertyName="flowLog">
                     <simple>fl</simple>
                 </setProperty>
-                <!-- <wireTap id="notf_wireTap3" uri="direct:generatelog"/> -->
+                <wireTap id="notf_wireTap3" uri="direct:generatelog"/>
                 <log id="notf_log15" message="Response Length : ${exchangeProperty[bodyLength]}"/>
                 <choice id="notf_choice3">
                     <when id="notf_when3">
@@ -544,7 +561,7 @@
                         </marshal>
                     </when>
                     <when id="notf_when1_errCore">
-                        <simple>${body.substring(0,4)} == '0074'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
                         <log id="_log2_errCore_notf" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="_unmarshal2_notf">
                             <flatpack
@@ -580,7 +597,7 @@
                         </marshal>
                     </when>
                     <when id="_when4">
-                        <simple>${body.substring(0,4)} == '0189'</simple>
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
                         <log id="notf_responseHli" message="Response from HLI TCP Router:  ${body}"/>
                         <unmarshal id="notf_unmarshal3">
                             <flatpack
@@ -624,7 +641,7 @@
                 <setProperty id="notf_setProperty_flowLog4" propertyName="flowLog">
                     <simple>json</simple>
                 </setProperty>
-                <!-- <wireTap id="notf_wireTap4" uri="direct:generatelog"/> -->
+                <wireTap id="notf_wireTap4" uri="direct:generatelog"/>
                 <doCatch id="notf_error404">
                     <exception>com.json.netty.util.MessageErrorException</exception>
                     <exception>com.json.netty.util.CamelCustomException</exception>
@@ -680,6 +697,9 @@
         <route id="_get_Seq">
             <from id="_from31" uri="direct:getseqnum"/>
             <log id="_log5" message="Current Seq : ${exchangeProperty[counter]}"/>
+            <delay id="_delay1">
+                <constant>1</constant>
+            </delay>
             <bean id="_bean1" method="getSequence('getSequence')" ref="generateCounter"/>
             <log id="_New_SeqNum" message="New value is ${body}"/>
         </route>
@@ -715,10 +735,17 @@
             </doTry>
         </route>
         <route id="_hli_tcp_router">
-            <from id="_from2" uri="direct:hlitcprouter?block=false"/>
+            <from id="_from2" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;discardIfNoConsumers=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;synchronous=true&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true&amp;backlog=1000&amp;bossCount=100"/>
-                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <log id="_co_log_amq_pre" message="Set correlationId : ${exchangeProperty[transId]}       as JMSCorrelationID"/>
+                <setHeader headerName="JMSCorrelationID" id="_co_JMSCorrelationID">
+                    <simple>${exchangeProperty[transId]}</simple>
+                </setHeader>
+                <convertBodyTo id="_convertBodyTo2" type="java.lang.String"/>
+                <to id="_co_toAmq" pattern="InOnly" uri="activemq:queue:exampleQueue?asyncConsumer=true&amp;replyToConcurrentConsumers=100&amp;replyToMaxConcurrentConsumers=100&amp;replyToOnTimeoutMaxConcurrentConsumers=100&amp;requestTimeout=60000"/>
+                <log id="_log4" message="Send data to AMQ Done"/>
+                <to id="_to5" uri="mock:endstoredatra"/>
                 <doCatch id="_doCatch2">
                     <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
@@ -773,4 +800,5 @@
     <bean class="com.json.netty.util.GeneralError" id="generalError" scope="singleton"/>
     <bean class="com.json.netty.GetBodyLength" id="getBodyLength" scope="singleton"/>
     <bean class="com.json.netty.util.MessageValidator" id="msgValidator" scope="singleton"/>
+    <bean class="com.json.netty.GetAmqData" id="getAmqData" scope="singleton"/>
 </beans>
