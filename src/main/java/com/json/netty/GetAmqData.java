@@ -84,10 +84,10 @@ public class GetAmqData {
 			session = connection.createSession(Boolean.FALSE, Session.AUTO_ACKNOWLEDGE);
 			Queue queue = session.createQueue("exampleQueue");
 			Destination destination = session.createQueue("exampleQueue");
-			MessageConsumer messageConsumer = session.createConsumer(queue,
+			MessageConsumer messageConsumer = session.createConsumer(destination,
 					"JMSCorrelationID='" + exchange.getProperty("transId") + "'");
 			System.out.println("Get data from AMQ with JMSCorrelationID:" + exchange.getProperty("transId"));
-			TextMessage textMessage = (TextMessage) messageConsumer.receive(10000);
+			TextMessage textMessage = (TextMessage) messageConsumer.receive(60000);
 			output = textMessage.getText();
 			System.out.println("Received Message From AMQ :" + output);
 			session.close();

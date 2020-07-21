@@ -737,7 +737,7 @@
         <route id="_hli_tcp_router">
             <from id="_from2" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;discardIfNoConsumers=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
             <doTry id="_doTry2">
-                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true&amp;tcpNoDelay=false"/>
                 <log id="_co_log_amq_pre" message="Set correlationId : ${exchangeProperty[transId]}       as JMSCorrelationID"/>
                 <setHeader headerName="JMSCorrelationID" id="_co_JMSCorrelationID">
                     <simple>${exchangeProperty[transId]}</simple>
