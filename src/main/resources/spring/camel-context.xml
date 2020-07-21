@@ -746,6 +746,8 @@
                 <to id="_co_toAmq" pattern="InOnly" uri="activemq:queue:exampleQueue?asyncConsumer=true&amp;replyToConcurrentConsumers=100&amp;replyToMaxConcurrentConsumers=100&amp;replyToOnTimeoutMaxConcurrentConsumers=100&amp;requestTimeout=60000"/>
                 <log id="_log4" message="Send data to AMQ Done"/>
                 <to id="_to5" uri="mock:endstoredatra"/>
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;synchronous=true&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
                 <doCatch id="_doCatch2">
                     <exception>java.io.IOException</exception>
                     <exception>java.net.ConnectException</exception>
