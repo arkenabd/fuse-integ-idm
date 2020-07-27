@@ -97,7 +97,7 @@ public class GetAmqData {
 			connection.close();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 			System.out.println("[" + exchange.getProperty("transId") + "] Data not Found");
 			return "Data not Found";
 		} finally {
