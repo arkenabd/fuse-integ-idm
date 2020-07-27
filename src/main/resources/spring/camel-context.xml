@@ -302,6 +302,7 @@
 				</doCatch>
 				<doCatch id="co_errorGeneral">
 					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+					<exception>org.restlet.Component.Server</exception>
 					<exception>com.json.netty.util.MessageBackendErrorException</exception>
 					<exception>java.io.IOException</exception>
 					<exception>java.net.ConnectException</exception>
@@ -577,6 +578,7 @@
 				</doCatch>
 				<doCatch id="rev_errorGeneral">
 					<exception>com.json.netty.util.MessageBackendErrorException</exception>
+					<exception>org.restlet.Component.Server</exception>
 					<exception>java.io.IOException</exception>
 					<exception>java.net.ConnectException</exception>
 					<exception>java.lang.ClassCastException</exception>
@@ -853,6 +855,7 @@
 				<doCatch id="notf_errorGeneral">
 					<exception>com.json.netty.util.MessageBackendErrorException</exception>
 					<exception>java.io.IOException</exception>
+					<exception>org.restlet.Component.Server</exception>
 					<exception>java.net.ConnectException</exception>
 					<exception>java.lang.ClassCastException</exception>
 					<exception>java.lang.IllegalArgumentException</exception>
