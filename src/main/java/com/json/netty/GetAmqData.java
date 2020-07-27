@@ -20,7 +20,8 @@ import org.springframework.jms.JmsException;
 
 public class GetAmqData {
 
-	public String process(Exchange exchange) throws Exception {
+	public String process(String amqaddress, String amqport, String amquser, String amqpass, String queuename,
+			String timeout, Exchange exchange) throws Exception {
 		/*
 		 * String url = (String) exchange.getProperty("fileRespPay");
 		 * 
@@ -77,25 +78,27 @@ public class GetAmqData {
 		Connection connection = null;
 		String output = "";
 		try {
-			ConnectionFactory factory = new ActiveMQConnectionFactory("usermMq", "HBDEMKuw",
-					"tcp://192.168.88.230:30728");
+			ConnectionFactory factory = new ActiveMQConnectionFactory(amquser, amqpass,
+					"tcp://" + amqaddress + ":" + amqport);
 			connection = factory.createConnection();
 			connection.start();
 			session = connection.createSession(Boolean.FALSE, Session.AUTO_ACKNOWLEDGE);
-			Queue queue = session.createQueue("exampleQueue");
-			Destination destination = session.createQueue("exampleQueue");
+			Queue queue = session.createQueue(queuename);
+			Destination destination = session.createQueue(queuename);
 			MessageConsumer messageConsumer = session.createConsumer(destination,
 					"JMSCorrelationID='" + exchange.getProperty("transId") + "'");
-			System.out.println("Get data from AMQ with JMSCorrelationID:" + exchange.getProperty("transId"));
-			TextMessage textMessage = (TextMessage) messageConsumer.receive(60000);
+			System.out.println("[" + exchange.getProperty("transId") + "] Get data from AMQ with JMSCorrelationID:"
+					+ exchange.getProperty("transId"));
+			TextMessage textMessage = (TextMessage) messageConsumer.receive(Integer.parseInt(timeout));
 			output = textMessage.getText();
-			System.out.println("Received Message From AMQ :" + output);
+			System.out.println("[" + exchange.getProperty("transId") + "] Received Message From AMQ :" + output);
+			exchange.setProperty("bodyResponseOri", output);
 			session.close();
 			connection.close();
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			System.out.println("Data not Found");
+			System.out.println("[" + exchange.getProperty("transId") + "] Data not Found");
 			return "Data not Found";
 		} finally {
 			// Be sure to close our JMS resources!

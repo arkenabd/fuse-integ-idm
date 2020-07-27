@@ -23,6 +23,17 @@ public class MessageValidator {
 
 		}
 
+		// validasi whether body null
+		if (exchange.getIn().getBody().toString().trim().length() == 0) {
+			isError = true;
+			if (errorList.size() == 0) {
+				errorList.add("Body request was null");
+			} else {
+				errorList.add(";Body request was null");
+			}
+
+		}
+
 		// validasi timestamp
 		SimpleDateFormat format = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {
@@ -36,9 +47,8 @@ public class MessageValidator {
 			}
 
 		}
-		//validasi token
-		
-		
+		// validasi token
+
 		if (isError == true) {
 			String errMsg = "";
 			for (int i = 0; i < errorList.size(); i++) {
@@ -46,7 +56,18 @@ public class MessageValidator {
 			}
 			throw new MessageErrorException(errMsg);
 		}
-		
-		
+
+	}
+
+	public void processBodyCheck(String body, Exchange exchange) throws Exception {
+
+		// validasi whether body null
+		try {
+			System.out.println("["+exchange.getProperty("transId")+"] Body :" + exchange.getIn().getBody().toString().trim());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			throw new MessageBodyNullErrorException("Request payload message was null");
+		}
+
 	}
 }

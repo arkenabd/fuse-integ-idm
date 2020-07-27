@@ -13,7 +13,7 @@ public class GetBodyLength implements Processor {
 		String body = "";
 		try {
 			body = (String) exchange.getIn().getBody().toString();
-			System.out.println("Response ORI from HLI :" + body);
+			System.out.println("["+exchange.getProperty("transId")+"] Response ORI from HLI :" + body);
 			if (body.length() != 189 && body.length() != 74) {
 				exchange.getIn().setBody("ERROR");
 			}

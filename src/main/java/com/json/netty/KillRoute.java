@@ -20,8 +20,6 @@ public class KillRoute implements Processor {
 		shutdownStrategy.setTimeout(1000);
 		shutdownStrategy.setTimeUnit(TimeUnit.MILLISECONDS);
 		shutdownStrategy.setShutdownNowOnTimeout(true);
-
-		System.out.println("Request Headers :" + exchange.getIn().getHeaders().toString());
 	}
 
 }

@@ -3,6 +3,7 @@ package com.json.netty.pojo.out;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.json.netty.util.MessageBackendErrorException;
 
 @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 @JsonPropertyOrder({ "Timestamp", "ClientID", "Key", "BranchID", "CounterID", "ProductType", "TrxType", "Detail",
@@ -152,6 +153,50 @@ public class IdmMainPojoB {
 	@JsonProperty("RespDetail")
 	public void setRespDetail(String respDetail) {
 		this.respDetail = respDetail;
+	}
+
+	public IdmMainPojoB assignValueAndCheck(String body, String length, String switchCode, String transId,
+			String clientIdCommon, String timestamp, String clientID, String key, String branchID, String counterID,
+			String productType, String trxType, String timeout, String versiProgram, String respCode, String respDetail)
+			throws Exception {
+		if (length.trim().length() == 0 || switchCode.trim().length() == 0 || transId.trim().length() == 0
+				|| clientIdCommon.trim().length() == 0) {
+			throw new MessageBackendErrorException("Response message from HLI was invalid :" + body);
+		}
+		IdmMainPojoB jres = new IdmMainPojoB();
+		jres.setTimestamp(timestamp.trim());
+		jres.setClientID(clientID.trim());
+		jres.setKey(key.trim());
+		jres.setBranchID(branchID.trim());
+		jres.setCounterID(counterID.trim());
+		jres.setProductType(productType.trim());
+		jres.setTrxType(trxType.trim());
+		jres.setDetail("");
+		try {
+			jres.setTimeout(timeout.trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+			jres.setTimeout("");
+		}
+		try {
+			jres.setVersiProgram(versiProgram.trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+			jres.setVersiProgram("");
+		}
+		try {
+			jres.setRespCode(respCode.trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+			jres.setRespCode("");
+		}
+		try {
+			jres.setRespDetail(respDetail.trim());
+		} catch (Exception e) {
+			e.printStackTrace();
+			jres.setRespDetail("");
+		}
+		return jres;
 	}
 
 	public IdmMainPojoB assignValue(String timestamp, String clientID, String key, String branchID, String counterID,
