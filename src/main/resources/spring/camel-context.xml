@@ -956,7 +956,6 @@
 			<doTry id="_doTry2">
 				<to id="_toHliTcpRouter"
 					uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;disconnectOnNoReply=false&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true" />
-				<onException id="_onException1" />
 				<setHeader headerName="JMSCorrelationID"
 					id="_co_JMSCorrelationID">
 					<simple>${body.substring(8,28)}</simple>
