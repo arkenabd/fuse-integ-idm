@@ -63,10 +63,20 @@ public class MessageValidator {
 
 		// validasi whether body null
 		try {
-			System.out.println("["+exchange.getProperty("transId")+"] Body :" + exchange.getIn().getBody().toString().trim());
+			System.out.println(
+					"[" + exchange.getProperty("transId") + "] Body :" + exchange.getIn().getBody().toString().trim());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			throw new MessageBodyNullErrorException("Request payload message was null");
+		}
+
+	}
+
+	public void process504(String body, Exchange exchange) throws Exception {
+
+		// validasi whether body null
+		if (body.contains("504 Gateway Time-out")) {
+			throw new MessageBodyNullErrorException("504 Gateway Time-out.The server didn't respond in time.");
 		}
 
 	}
