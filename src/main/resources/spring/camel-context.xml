@@ -214,7 +214,7 @@
                         <unmarshal id="_unmarshal1_otw">
                             <custom ref="idm_dataformat"/>
                         </unmarshal>
-                        <bean id="_bean2_otw"
+                        <bean id="_bean29_otw"
                             method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponse"/>
                         <marshal id="_marshal1_otw">
                             <json library="Jackson"/>
