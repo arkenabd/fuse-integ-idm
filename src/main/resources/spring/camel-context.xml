@@ -1,1056 +1,880 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
-	<bean class="org.apache.camel.impl.DefaultShutdownStrategy"
-		id="shutdown">
-		<property name="timeout" value="1" />
-	</bean>
-	<bean class="java.util.concurrent.atomic.AtomicLong"
-		id="execCounter" />
-	<bean class="org.apache.activemq.ActiveMQConnectionFactory"
-		id="jmsConnectionFactory">
-		<property name="brokerURL"
-			value="tcp://${amq.address}:${amq.port}" />
-		<property name="userName" value="${amq.user}" />
-		<property name="password" value="${amq.password}" />
-		<!-- <property name="brokerURL" value="tcp://localhost:61616"/> <property 
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd        http://camel.apache.org/schema/spring       http://camel.apache.org/schema/spring/camel-spring.xsd">
+    <bean class="org.apache.camel.impl.DefaultShutdownStrategy" id="shutdown">
+        <property name="timeout" value="1"/>
+    </bean>
+    <bean class="java.util.concurrent.atomic.AtomicLong" id="execCounter"/>
+    <bean class="org.apache.activemq.ActiveMQConnectionFactory" id="jmsConnectionFactory">
+        <property name="brokerURL" value="tcp://${amq.address}:${amq.port}"/>
+        <property name="userName" value="${amq.user}"/>
+        <property name="password" value="${amq.password}"/>
+        <!-- <property name="brokerURL" value="tcp://localhost:61616"/> <property 
 			name="userName" value="admin"/> <property name="password" value="admin"/> -->
-	</bean>
-	<bean class="org.apache.camel.component.jms.JmsConfiguration"
-		id="jmsConfig">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="transacted" value="false" />
-		<property name="concurrentConsumers" value="100" />
-	</bean>
-	<bean
-		class="org.apache.activemq.camel.component.ActiveMQComponent"
-		id="activemq" />
-	<bean class="org.restlet.Component" id="restletComponent" />
-	<bean class="org.apache.camel.component.restlet.RestletComponent"
-		id="restlet">
-		<constructor-arg index="0">
-			<ref bean="restletComponent" />
-		</constructor-arg>
-		<property name="maxThreads" value="200" />
-		<property name="minThreads" value="1" />
-		<property name="threadMaxIdleTimeMs" value="60000" />
-	</bean>
-	<camelContext id="camel" streamCache="true"
-		xmlns="http://camel.apache.org/schema/spring">
-		<dataFormats>
-			<json allowJmsType="true" allowUnmarshallType="true"
-				contentTypeHeader="false" enableJaxbAnnotationModule="false"
-				id="idm_dataformat" library="Jackson" prettyPrint="false"
-				unmarshalTypeName="com.json.netty.pojo.in.IdmMainPojo"
-				useDefaultObjectMapper="true" />
-		</dataFormats>
-		<restConfiguration apiContextListing="false"
-			apiContextPath="/api-docs" bindingMode="off" component="restlet"
-			contextPath="/idm" enableCORS="true" host="0.0.0.0" port="7071">
-			<!-- setup swagger api descriptions -->
-			<apiProperty key="base.path" value="rest" />
-			<apiProperty key="api.version" value="1.0.0" />
-			<apiProperty key="api.title" value="Integ IDM Services" />
-			<apiProperty key="api.description"
-				value="Camel Rest Example with Swagger that provides an User REST service" />
-			<apiProperty key="api.contact.name"
-				value="The Apache Camel team" />
-			<apiProperty key="api.spesification.contentType.json"
-				value="application/vnd.oai.openapi+json;version=2.0" />
-			<apiProperty key="api.spesification.contentType.yaml"
-				value="application/vnd.oai.openapi;version=2.0" />
-		</restConfiguration>
-		<rest id="rest-1e852fc0-7e2d-430c-b111-006050d7428a">
-			<post id="5ba51d35-c0e7-4b17-b65c-b73dbfb01920"
-				uri="/notification">
-				<to uri="direct:notification" />
-			</post>
-			<post id="1f0a847b-69b0-4a18-bfb4-e17cfce1d6f9" uri="/reversal">
-				<to uri="direct:reversal" />
-			</post>
-			<post apiDocs="true" enableCORS="true"
-				id="ea0ae390-bed8-49af-bbee-8256a15f0fe2" uri="/cashout">
-				<to uri="direct:cashout" />
-			</post>
-			<get apiDocs="true" enableCORS="true"
-				id="461cbcae-9cd6-44bd-a7a9-a7d54105cc4f" uri="/hello/{name}">
-				<to uri="direct:get" />
-			</get>
-		</rest>
-		<route delayer="1" id="co_cashout">
-			<from id="co_from4"
-				uri="direct:cashout?block=false&amp;timeout=60000" />
-			<process id="_Init_Strategy_co" ref="killRoute" />
-			<doTry id="co_doTry2">
-				<to id="co_to4" uri="direct:getseqnum" />
-				<log id="_log8"
-					message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}\nRoute enter:   ${bean:execCounter.incrementAndGet}" />
-				<log id="co_input_msg"
-					message="[${exchangeProperty[transId]}] Input Message : ${body}" />
-				<setProperty id="_setProperty16" propertyName="clientIp">
-					<simple>${in.headers.X-forwarded-for}</simple>
-				</setProperty>
-				<setProperty id="_setProperty1" propertyName="bodyOri">
-					<simple>${body}</simple>
-				</setProperty>
-				<setProperty id="co_setProperty_flowLog1"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<setProperty id="_setProperty2"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<wireTap id="co_wireTap1" uri="direct:generatelog" />
-				<bean id="_bean8" method="processBodyCheck(${body})"
-					ref="msgValidator" />
-				<convertBodyTo id="co_String" type="java.lang.String" />
-				<unmarshal id="co_input_to_pojo">
-					<custom ref="idm_dataformat" />
-				</unmarshal>
-				<log id="co_TrxType"
-					message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}" />
-				<bean id="_bean3"
-					method="process(${body.timestamp},${body.trxType}, 'CASHOUT')"
-					ref="msgValidator" />
-				<bean id="co_bean3"
-					method="generateFlReqCashout(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})"
-					ref="IdmPreGenerateFL" />
-				<marshal id="co_marshal4">
-					<flatpack definition="IdmFlconfigIn_cashout.xml"
-						fixed="true" ignoreFirstRecord="false" />
-				</marshal>
-				<setProperty id="co_keepBody"
-					propertyName="bodyBeforeCallTcpRouter">
-					<simple>${body}</simple>
-				</setProperty>
-				<log id="co_log14"
-					message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}" />
-				<setProperty id="_setProperty3"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<setProperty id="co_setProperty_flowLog2"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="co_wireTap2" uri="direct:generatelog" />
-				<to id="co_to22"
-					uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never" />
-				<bean id="_bean5"
-					method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})"
-					ref="getAmqData" />
-				<process id="co_Check bodyLength" ref="getBodyLength" />
-				<setProperty id="_setProperty6"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="co_setProperty_flowLog3"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="co_wireTap3" uri="direct:generatelog" />
-				<log id="co_log15"
-					message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}" />
-				<choice id="co_choice3">
-					<when id="co_when31">
-						<simple>${body} contains 'Cannot connect'</simple>
-						<log id="co_log5"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="err_co_setHeader2">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader2">
-							<simple>Maaf server sedang Maintenance</simple>
-						</setHeader>
-						<setBody id="hlierr_co_setBody2">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')"
-							ref="IdmJsonResponse" />
-						<marshal id="_marshal1">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="_when1_errCore_rev">
-						<simple>${exchangeProperty[bodyLength]} == '74'</simple>
-						<log id="_log2_errCore"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="_unmarshal2">
-							<flatpack definition="IdmFlconfigOut_Error.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="_log3"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}" />
-						<setProperty id="_setProperty5"
-							propertyName="respCode">
-							<simple>${body.get(0).get(RESP_CODE)}</simple>
-						</setProperty>
-						<setProperty id="_setProperty4"
-							propertyName="respDetail">
-							<simple>${body.get(0).get(RESP_DETAIL)}</simple>
-						</setProperty>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader1">
-							<simple>${exchangeProperty[respDetail]}</simple>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="co_setHeader2_errCore">
-							<constant>500</constant>
-						</setHeader>
-						<setBody id="hlierr_co_setBody2_errCore">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_errCore"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_errCore">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_errCore"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})"
-							ref="IdmJsonResponse" />
-						<marshal id="_marshal1_errCore">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="_when4_rev">
-						<simple>${exchangeProperty[bodyLength]} == '189'</simple>
-						<log id="co_responseHli"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="co_unmarshal3">
-							<flatpack definition="IdmFlconfigOut_cashout.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="co_log6"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}" />
-						<bean id="co_JsonResult"
-							method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})"
-							ref="IdmJsonResponse" />
-						<marshal id="co_marshal5">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<otherwise id="co_otherwise3">
-						<log id="_log2"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="co_setHeader2_otw">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader3">
-							<simple>Internal Server Error</simple>
-						</setHeader>
-						<setBody id="hlierr_co_setBody2_otw">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_otw"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_otw">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean29_otw"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-							ref="IdmJsonResponse" />
-						<marshal id="_marshal1_otw">
-							<json library="Jackson" />
-						</marshal>
-					</otherwise>
-				</choice>
-				<setProperty id="_setProperty7"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="co_setProperty_flowLog4"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<wireTap id="co_wireTap4" uri="direct:generatelog" />
-				<doCatch id="co_error404">
-					<exception>com.json.netty.util.MessageErrorException</exception>
-					<exception>com.json.netty.util.CamelCustomException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<log id="co_log1"
-						message="[${exchangeProperty[transId]}] Error404 Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="co_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="404_co_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="404_co_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="404_co_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="404_co__bean2"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404','Format data salah')"
-						ref="IdmJsonResponse" />
-					<marshal id="404_co_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="co_errorGeneral">
-					<exception>org.apache.camel.spi.ExceptionHandler</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<exception>com.json.netty.util.MessageBackendErrorException</exception>
-					<exception>java.io.IOException</exception>
-					<exception>java.net.ConnectException</exception>
-					<exception>java.lang.ClassCastException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<exception>io.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.apache.camel.ExpressionEvaluationException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-					<exception>org.apache.camel.InvalidPayloadException</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
-					<log id="co_errorBody_log1"
-						message="[${exchangeProperty[transId]}] ErrorGeneral Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="co_errorGeneral_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="co_errorGeneral_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="co_errorGeneral_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="co_errorGeneral_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="co_errorBody_bean2"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-						ref="IdmJsonResponse" />
-					<marshal id="co_errorGeneral_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="co_error_bodyNull">
-					<exception>com.json.netty.util.MessageBodyNullErrorException</exception>
-					<log id="co_errorGeneral_log12"
-						message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="co_errorBody_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<bean id="co_errorGeneral_bean2"
-						method="assignValue('','','','','','','','','','','404','Format data salah')"
-						ref="IdmJsonResponse" />
-					<marshal id="co_errorBody_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-			</doTry>
-		</route>
-		<route id="rev_reversal">
-			<from id="rev_from4" uri="direct:reversal" />
-			<process id="_Init_Strategy_rev" ref="killRoute" />
-			<doTry id="rev_doTry2">
-				<to id="rev_to4" uri="direct:getseqnum" />
-				<log id="_log7"
-					message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}" />
-				<log id="rev_input_msg"
-					message="[${exchangeProperty[transId]}] Input Message : ${body}" />
-				<setProperty id="_setProperty17" propertyName="clientIp">
-					<simple>${in.headers.X-forwarded-for}</simple>
-				</setProperty>
-				<setProperty id="_setProperty1_rev"
-					propertyName="bodyOri">
-					<simple>${body}</simple>
-				</setProperty>
-				<setProperty id="_setProperty8"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<setProperty id="rev_setProperty_flowLog1"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<wireTap id="rev_wireTap1" uri="direct:generatelog" />
-				<bean id="_bean9" method="processBodyCheck(${body})"
-					ref="msgValidator" />
-				<convertBodyTo id="rev_String" type="java.lang.String" />
-				<unmarshal id="rev_input_to_pojo">
-					<custom ref="idm_dataformat" />
-				</unmarshal>
-				<log id="rev_TrxType"
-					message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}" />
-				<bean id="_bean3_rev"
-					method="process(${body.timestamp},${body.trxType}, 'REVERSAL')"
-					ref="msgValidator" />
-				<bean id="rev_bean3"
-					method="generateFlReqReversal(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})"
-					ref="IdmPreGenerateFL" />
-				<marshal id="rev_marshal4">
-					<flatpack definition="IdmFlconfigIn_cashout.xml"
-						fixed="true" ignoreFirstRecord="false" />
-				</marshal>
-				<setProperty id="rev_keepBody"
-					propertyName="bodyBeforeCallTcpRouter">
-					<simple>${body}</simple>
-				</setProperty>
-				<log id="rev_log14"
-					message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}" />
-				<setProperty id="_setProperty9"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<setProperty id="rev_setProperty_flowLog2"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="rev_wireTap2" uri="direct:generatelog" />
-				<to id="rev_to22"
-					uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never" />
-				<bean id="_bean6"
-					method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})"
-					ref="getAmqData" />
-				<process id="rev_Check bodyLength" ref="getBodyLength" />
-				<setProperty id="_setProperty10"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="rev_setProperty_flowLog3"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="rev_wireTap3" uri="direct:generatelog" />
-				<log id="rev_log15"
-					message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}" />
-				<choice id="rev_choice3">
-					<when id="rev_when3">
-						<simple>${body} contains 'Cannot connect'</simple>
-						<log id="rev_log5"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="err_rev_setHeader2">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader2_rev">
-							<simple>Maaf server sedang Maintenance</simple>
-						</setHeader>
-						<setBody id="hlierr_rev_setBody2">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_rev"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_rev">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_rev"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_rev">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="_when1_errCore">
-						<simple>${exchangeProperty[bodyLength]} == '74'</simple>
-						<log id="_log2_errCore_rev"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="_unmarshal2_rev">
-							<flatpack definition="IdmFlconfigOut_Error.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="_log3_rev"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}" />
-						<setProperty id="_setProperty5_rev"
-							propertyName="respCode">
-							<simple>${body.get(0).get(RESP_CODE)}</simple>
-						</setProperty>
-						<setProperty id="_setProperty4_rev"
-							propertyName="respDetail">
-							<simple>${body.get(0).get(RESP_DETAIL)}</simple>
-						</setProperty>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader1_rev">
-							<simple>${exchangeProperty[respDetail]}</simple>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="rev_setHeader2_errCore">
-							<constant>500</constant>
-						</setHeader>
-						<setBody id="hlierr_rev_setBody2_errCore">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_errCore_rev"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_errCore_rev">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_errCore_rev"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_errCore_rev">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="_when4_notf">
-						<simple>${exchangeProperty[bodyLength]} == '189'</simple>
-						<log id="rev_responseHli"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="rev_unmarshal3">
-							<flatpack definition="IdmFlconfigOut_cashout.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="rev_log6"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}" />
-						<bean id="rev_JsonResult"
-							method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})"
-							ref="IdmJsonResponseB" />
-						<marshal id="rev_marshal5">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<otherwise id="rev_otherwise3">
-						<log id="_log2_rev"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="rev_setHeader2_otw">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader3_rev">
-							<simple>Internal Server Error</simple>
-						</setHeader>
-						<setBody id="hlierr_rev_setBody2_otw">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_otw_rev"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_otw_rev">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_otw_rev"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_otw_rev">
-							<json library="Jackson" />
-						</marshal>
-					</otherwise>
-				</choice>
-				<setProperty id="_setProperty11"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="rev_setProperty_flowLog4"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<wireTap id="rev_wireTap4" uri="direct:generatelog" />
-				<doCatch id="rev_error404">
-					<exception>com.json.netty.util.MessageErrorException</exception>
-					<exception>com.json.netty.util.CamelCustomException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<log id="rev_log1"
-						message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="rev_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="404_rev_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="404_rev_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="404_rev_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="404_rev__bean2"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'404','Format data salah')"
-						ref="IdmJsonResponseB" />
-					<marshal id="404_rev_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="rev_errorGeneral">
-					<exception>com.json.netty.util.MessageBackendErrorException</exception>
-					<exception>java.io.IOException</exception>
-					<exception>java.net.ConnectException</exception>
-					<exception>java.lang.ClassCastException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<exception>io.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.apache.camel.ExpressionEvaluationException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-					<exception>org.apache.camel.InvalidPayloadException</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
-					<log id="rev_errorGeneral_log1"
-						message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="rev_errorGeneral_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="rev_errorGeneral_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="rev_errorGeneral_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="rev_errorGeneral_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="rev_errorGeneral_bean29"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-						ref="IdmJsonResponseB" />
-					<marshal id="rev_errorGeneral_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="rev_error_bodyNull">
-					<exception>com.json.netty.util.MessageBodyNullErrorException</exception>
-					<log id="rev_errorGeneral_log12"
-						message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="rev_errorBody_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<bean id="rev_errorGeneral_bean2"
-						method="assignValue('','','','','','','','','','404','Format data salah')"
-						ref="IdmJsonResponseB" />
-					<marshal id="rev_errorBody_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-			</doTry>
-		</route>
-		<route id="notf_notification">
-			<from id="notf_from4" uri="direct:notification" />
-			<process id="_Init_Strategy_notf" ref="killRoute" />
-			<doTry id="notf_doTry2">
-				<to id="notf_to4" uri="direct:getseqnum" />
-				<log id="_log6"
-					message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}" />
-				<log id="notf_input_msg"
-					message="[${exchangeProperty[transId]}] Input Message : ${body}" />
-				<setProperty id="_setProperty18" propertyName="clientIp">
-					<simple>${in.headers.X-forwarded-for}</simple>
-				</setProperty>
-				<setProperty id="_setProperty1_notf"
-					propertyName="bodyOri">
-					<simple>${body}</simple>
-				</setProperty>
-				<setProperty id="_setProperty15"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<setProperty id="notf_setProperty_flowLog1"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<wireTap id="notf_wireTap1" uri="direct:generatelog" />
-				<bean id="_bean10" method="processBodyCheck(${body})"
-					ref="msgValidator" />
-				<convertBodyTo id="notf_String"
-					type="java.lang.String" />
-				<unmarshal id="notf_input_to_pojo">
-					<custom ref="idm_dataformat" />
-				</unmarshal>
-				<log id="notf_TrxType"
-					message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}" />
-				<bean id="_bean3_notf"
-					method="process(${body.timestamp},${body.trxType}, 'NOTIFICATION')"
-					ref="msgValidator" />
-				<bean id="notf_bean3"
-					method="generateFlReqNotification(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})"
-					ref="IdmPreGenerateFL" />
-				<marshal id="notf_marshal4">
-					<flatpack definition="IdmFlconfigIn_cashout.xml"
-						fixed="true" ignoreFirstRecord="false" />
-				</marshal>
-				<setProperty id="notf_keepBody"
-					propertyName="bodyBeforeCallTcpRouter">
-					<simple>${body}</simple>
-				</setProperty>
-				<log id="notf_log14"
-					message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}" />
-				<setProperty id="_setProperty14"
-					propertyName="messageType">
-					<simple>Request</simple>
-				</setProperty>
-				<setProperty id="notf_setProperty_flowLog2"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="notf_wireTap2" uri="direct:generatelog" />
-				<to id="notf_to22"
-					uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never" />
-				<bean id="_bean7"
-					method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})"
-					ref="getAmqData" />
-				<process id="notf_Check bodyLength" ref="getBodyLength" />
-				<setProperty id="_setProperty13"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="notf_setProperty_flowLog3"
-					propertyName="flowLog">
-					<simple>fl</simple>
-				</setProperty>
-				<wireTap id="notf_wireTap3" uri="direct:generatelog" />
-				<log id="notf_log15"
-					message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}" />
-				<choice id="notf_choice3">
-					<when id="notf_when3">
-						<simple>${body} contains 'Cannot connect'</simple>
-						<log id="notf_log5"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="err_notf_setHeader2">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader2_notf">
-							<simple>Maaf server sedang Maintenance</simple>
-						</setHeader>
-						<setBody id="hlierr_notf_setBody2">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_notf"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_notf">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_notf"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_notf">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="notf_when1_errCore">
-						<simple>${exchangeProperty[bodyLength]} == '74'</simple>
-						<log id="_log2_errCore_notf"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="_unmarshal2_notf">
-							<flatpack definition="IdmFlconfigOut_Error.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="_log3_notf"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}" />
-						<setProperty id="_setProperty5_notf"
-							propertyName="respCode">
-							<simple>${body.get(0).get(RESP_CODE)}</simple>
-						</setProperty>
-						<setProperty id="_setProperty4_notf"
-							propertyName="respDetail">
-							<simple>${body.get(0).get(RESP_DETAIL)}</simple>
-						</setProperty>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader1_notf">
-							<simple>${exchangeProperty[respDetail]}</simple>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="notf_setHeader2_errCore">
-							<constant>500</constant>
-						</setHeader>
-						<setBody id="hlierr_notf_setBody2_errCore">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_errCore_notf"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_errCore_notf">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_errCore_notf"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_errCore_notf">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<when id="_when4">
-						<simple>${exchangeProperty[bodyLength]} == '189'</simple>
-						<log id="notf_responseHli"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<unmarshal id="notf_unmarshal3">
-							<flatpack definition="IdmFlconfigOut_cashout.xml"
-								fixed="true" ignoreFirstRecord="false" />
-						</unmarshal>
-						<log id="notf_log6"
-							message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}" />
-						<bean id="notf_JsonResult"
-							method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})"
-							ref="IdmJsonResponseB" />
-						<marshal id="notf_marshal5">
-							<json library="Jackson" />
-						</marshal>
-					</when>
-					<otherwise id="notf_otherwise3">
-						<log id="_log2_notf"
-							message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}" />
-						<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-							id="notf_setHeader2_otw">
-							<constant>500</constant>
-						</setHeader>
-						<setHeader headerName="Exchange.HTTP_RESPONSE_TEXT"
-							id="_setHeader3_notf">
-							<simple>Internal Server Error</simple>
-						</setHeader>
-						<setBody id="hlierr_notf_setBody2_otw">
-							<simple>${exchangeProperty[bodyOri]}</simple>
-						</setBody>
-						<convertBodyTo id="_convertBodyTo1_otw_notf"
-							type="java.lang.String" />
-						<unmarshal id="_unmarshal1_otw_notf">
-							<custom ref="idm_dataformat" />
-						</unmarshal>
-						<bean id="_bean2_otw_notf"
-							method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-							ref="IdmJsonResponseB" />
-						<marshal id="_marshal1_otw_notf">
-							<json library="Jackson" />
-						</marshal>
-					</otherwise>
-				</choice>
-				<setProperty id="_setProperty12"
-					propertyName="messageType">
-					<simple>Response</simple>
-				</setProperty>
-				<setProperty id="notf_setProperty_flowLog4"
-					propertyName="flowLog">
-					<simple>json</simple>
-				</setProperty>
-				<wireTap id="notf_wireTap4" uri="direct:generatelog" />
-				<doCatch id="notf_error404">
-					<exception>com.json.netty.util.MessageErrorException</exception>
-					<exception>com.json.netty.util.CamelCustomException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<log id="notf_log1"
-						message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="notf_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="404_notf_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="404_notf_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="404_notf_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="404_notf__bean2"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'404','Format data salah')"
-						ref="IdmJsonResponseB" />
-					<marshal id="404_notf_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="notf_errorGeneral">
-					<exception>com.json.netty.util.MessageBackendErrorException</exception>
-					<exception>java.io.IOException</exception>
-					<exception>java.net.ConnectException</exception>
-					<exception>java.lang.ClassCastException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<exception>io.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.apache.camel.ExpressionEvaluationException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-					<exception>org.apache.camel.InvalidPayloadException</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
-					<log id="notf_errorGeneral_log1"
-						message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="notf_errorGeneral_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<setBody id="notf_errorGeneral_setBody2">
-						<simple>${exchangeProperty[bodyOri]}</simple>
-					</setBody>
-					<convertBodyTo id="notf_errorGeneral_convertBodyTo1"
-						type="java.lang.String" />
-					<unmarshal id="notf_errorGeneral_unmarshal1">
-						<custom ref="idm_dataformat" />
-					</unmarshal>
-					<bean id="notf_errorGeneral_bean22"
-						method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')"
-						ref="IdmJsonResponseB" />
-					<marshal id="notf_errorGeneral_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-				<doCatch id="notf_error_bodyNull">
-					<exception>com.json.netty.util.MessageBodyNullErrorException</exception>
-					<log id="notf_errorGeneral_log12"
-						message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}" />
-					<setHeader headerName="Exchange.HTTP_RESPONSE_CODE"
-						id="notf_errorBody_setHeader2">
-						<constant>500</constant>
-					</setHeader>
-					<bean id="notf_errorGeneral_bean2"
-						method="assignValue('','','','','','','','','','404','Format data salah')"
-						ref="IdmJsonResponseB" />
-					<marshal id="notf_errorBody_marshal1">
-						<json library="Jackson" />
-					</marshal>
-				</doCatch>
-			</doTry>
-		</route>
-		<route id="_get_Seq">
-			<from id="_from31" uri="direct:getseqnum" />
-			<process id="_Init_Strategy_getseqnum" ref="killRoute" />
-			<throttle id="_throttle1" timePeriodMillis="100">
-				<constant>1</constant>
-				<bean id="_bean1" method="getSequence('getSequence')"
-					ref="generateCounter" />
-			</throttle>
-		</route>
-		<route id="_Quartz">
-			<from id="_to3"
-				uri="quartz:groupName/timerName?cron=0 0 0 1/1 * ? *" />
-			<process id="_Init_Strategy_quartz" ref="killRoute" />
-			<to id="_to1" uri="direct:quartzTask" />
-		</route>
-		<route id="_refresh_Seq">
-			<from id="_to2" uri="direct:quartzTask" />
-			<process id="_Init_Strategy_quartztask" ref="killRoute" />
-			<log id="_log12"
-				message="[${exchangeProperty[transId]}] This task is triggered from Quartz, for refresh sequence" />
-			<bean id="_bean4" method="resetSequence('resetSequence')"
-				ref="generateCounter" />
-		</route>
-		<route id="_GET">
-			<from id="_from1" uri="direct:get" />
-			<process id="_Init_Strategy_get" ref="killRoute" />
-			<doTry id="_doTry1">
-				<log id="_log1" loggingLevel="WARN"
-					message="[${exchangeProperty[transId]}] Header name value : ${header.name}" />
-				<setBody id="_setBody4">
-					<simple>${header.name}</simple>
-				</setBody>
-				<setBody id="_setBody3">
-					<simple>{ "result" : "Hello, ${header.name}" }</simple>
-				</setBody>
-				<doCatch id="_doCatch1">
-					<!-- catch multiple exceptions -->
-					<exception>java.io.IOException</exception>
-					<exception>java.lang.IllegalStateException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<setBody id="_setBody5">
-						<simple>{ "result" : "Error" }</simple>
-					</setBody>
-				</doCatch>
-			</doTry>
-		</route>
-		<route id="_hli_tcp_router">
-			<from id="_from2"
-				uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;discardIfNoConsumers=true&amp;timeout=60000&amp;waitForTaskToComplete=Never" />
-			<process id="_Init_Strategy_hli" ref="killRoute" />
-			<doTry id="_doTry2">
-				<to id="_toHliTcpRouter"
-					uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;bridgeErrorHandler=true&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;disconnectOnNoReply=false&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;connectTimeout=60000&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true" />
-				<bean id="_bean11" method="process504(${body})"
-					ref="msgValidator" />
-				<setHeader headerName="JMSCorrelationID"
-					id="_co_JMSCorrelationID">
-					<simple>${body.substring(8,28)}</simple>
-				</setHeader>
-				<log id="_co_log_amq_pre"
-					message="Set transaction Id : [${header.JMSCorrelationID}] as JMSCorrelationID" />
-				<convertBodyTo id="_convertBodyTo2"
-					type="java.lang.String" />
-				<choice id="_choice2">
-					<when id="_when1">
-						<simple>${header.JMSCorrelationID} contains ' '</simple>
-						<log id="_log5" message="No data stored to AMQ" />
-					</when>
-					<otherwise id="_otherwise1">
-						<to id="_co_toAmq" pattern="InOnly"
-							uri="activemq:queue:{{amq.queue.name}}?asyncConsumer=true&amp;replyToConcurrentConsumers=100&amp;replyToMaxConcurrentConsumers=100&amp;replyToOnTimeoutMaxConcurrentConsumers=100&amp;requestTimeout=30000" />
-						<log id="_log4"
-							message="Send data with transaction Id [${header.JMSCorrelationID}] to AMQ Done" />
-					</otherwise>
-				</choice>
-				<to id="_to5" uri="mock:endstoredatra" />
-				<!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
-				<doCatch id="_doCatch2">
-					<exception>java.io.IOException</exception>
-					<exception>java.net.ConnectException</exception>
-					<exception>java.lang.ClassCastException</exception>
-					<exception>java.lang.IllegalArgumentException</exception>
-					<exception>io.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
-					<exception>org.apache.camel.ExpressionEvaluationException</exception>
-					<exception>org.apache.camel.CamelExchangeException</exception>
-					<exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
-					<exception>org.apache.camel.InvalidPayloadException</exception>
-					<exception>org.apache.camel.NoTypeConversionAvailableException</exception>
-					<log id="log1_callRouter"
-						message="Error in HLI router : Message : ${exception.message}" />
-				</doCatch>
-			</doTry>
-		</route>
-		<route id="_generate_log">
-			<from id="_from3" uri="direct:generatelog" />
-			<process id="_Init_Strategy_genLog" ref="killRoute" />
-			<transform id="_cashout_log_1_transform">
-				<simple>Transaction Id : ${exchangeProperty[transId]}\nMessage Type : ${exchangeProperty[messageType]}\nClient IP : ${exchangeProperty[clientIp]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
-			</transform>
-			<choice id="_choice1">
-				<when id="_json_log">
-					<simple>${exchangeProperty[flowLog]} == 'json'</simple>
-					<toD id="_cashout_log_1_write"
-						uri="ftp://{{ftp.address}}:{{ftp.port}}/indomaret/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}_json.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password={{ftp.password}}&amp;username={{ftp.user}}" />
-				</when>
-				<otherwise id="_FL_log">
-					<toD id="_cashout_log_2_write"
-						uri="ftp://{{ftp.address}}:{{ftp.port}}/indomaret/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password={{ftp.password}}&amp;username={{ftp.user}}" />
-				</otherwise>
-			</choice>
-			<to id="_to4" uri="mock:tap" />
-		</route>
-	</camelContext>
-	<bean class="org.jboss.netty.handler.codec.string.StringDecoder"
-		id="stringDecoder" />
-	<!-- String to ChannelBuffer/ByteBuf -->
-	<bean class="org.jboss.netty.handler.codec.string.StringEncoder"
-		id="stringEncoder" />
-	<bean class="com.json.netty.GenerateJson" id="generateJson"
-		scope="singleton" />
-	<bean class="com.json.netty.PreGenerateFixedLength"
-		id="preGenerateFL" scope="singleton" />
-	<bean class="com.json.netty.util.JsonResult" id="jsonResult"
-		scope="singleton" />
-	<bean class="com.json.netty.IdmPreGenerateFixedLength"
-		id="IdmPreGenerateFL" scope="singleton" />
-	<bean class="com.json.netty.pojo.out.IdmMainPojo"
-		id="IdmJsonResponse" scope="singleton" />
-	<bean class="com.json.netty.pojo.out.IdmMainPojoB"
-		id="IdmJsonResponseB" scope="singleton" />
-	<bean class="com.json.netty.GenerateCounter" id="generateCounter"
-		scope="singleton" />
-	<bean class="com.json.netty.RefreshCounter" id="refreshCounter"
-		scope="singleton" />
-	<bean class="com.json.netty.KillRoute" id="killRoute"
-		scope="singleton" />
-	<bean class="io.netty.handler.codec.string.StringDecoder"
-		id="string-decoder" />
-	<bean class="io.netty.handler.codec.string.StringEncoder"
-		id="string-encoder" />
-	<bean class="com.json.netty.util.GeneralError" id="generalError"
-		scope="singleton" />
-	<bean class="com.json.netty.GetBodyLength" id="getBodyLength"
-		scope="singleton" />
-	<bean class="com.json.netty.util.MessageValidator"
-		id="msgValidator" scope="singleton" />
-	<bean class="com.json.netty.GetAmqData" id="getAmqData"
-		scope="singleton" />
+    </bean>
+    <bean class="org.apache.camel.component.jms.JmsConfiguration" id="jmsConfig">
+        <property name="connectionFactory" ref="jmsConnectionFactory"/>
+        <property name="transacted" value="false"/>
+        <property name="concurrentConsumers" value="100"/>
+    </bean>
+    <bean class="org.apache.activemq.camel.component.ActiveMQComponent" id="activemq"/>
+    <bean class="org.restlet.Component" id="restletComponent"/>
+    <bean class="org.apache.camel.component.restlet.RestletComponent" id="restlet">
+        <constructor-arg index="0">
+            <ref bean="restletComponent"/>
+        </constructor-arg>
+        <property name="maxThreads" value="200"/>
+        <property name="minThreads" value="1"/>
+        <property name="threadMaxIdleTimeMs" value="60000"/>
+    </bean>
+    <camelContext id="camel" streamCache="true" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <json allowJmsType="true" allowUnmarshallType="true"
+                contentTypeHeader="false"
+                enableJaxbAnnotationModule="false" id="idm_dataformat"
+                library="Jackson" prettyPrint="false"
+                unmarshalTypeName="com.json.netty.pojo.in.IdmMainPojo" useDefaultObjectMapper="true"/>
+        </dataFormats>
+        <restConfiguration apiContextListing="false"
+            apiContextPath="/api-docs" bindingMode="off"
+            component="restlet" contextPath="/idm" enableCORS="true"
+            host="0.0.0.0" port="7071">
+            <!-- setup swagger api descriptions -->
+            <apiProperty key="base.path" value="rest"/>
+            <apiProperty key="api.version" value="1.0.0"/>
+            <apiProperty key="api.title" value="Integ IDM Services"/>
+            <apiProperty key="api.description" value="Camel Rest Example with Swagger that provides an User REST service"/>
+            <apiProperty key="api.contact.name" value="The Apache Camel team"/>
+            <apiProperty key="api.spesification.contentType.json" value="application/vnd.oai.openapi+json;version=2.0"/>
+            <apiProperty key="api.spesification.contentType.yaml" value="application/vnd.oai.openapi;version=2.0"/>
+        </restConfiguration>
+        <rest id="rest-1e852fc0-7e2d-430c-b111-006050d7428a">
+            <post id="5ba51d35-c0e7-4b17-b65c-b73dbfb01920" uri="/notification">
+                <to uri="direct:notification"/>
+            </post>
+            <post id="1f0a847b-69b0-4a18-bfb4-e17cfce1d6f9" uri="/reversal">
+                <to uri="direct:reversal"/>
+            </post>
+            <post apiDocs="true" enableCORS="true"
+                id="ea0ae390-bed8-49af-bbee-8256a15f0fe2" uri="/cashout">
+                <to uri="direct:cashout"/>
+            </post>
+            <get apiDocs="true" enableCORS="true"
+                id="461cbcae-9cd6-44bd-a7a9-a7d54105cc4f" uri="/hello/{name}">
+                <to uri="direct:get"/>
+            </get>
+        </rest>
+        <route delayer="1" id="co_cashout">
+            <from id="co_from4" uri="direct:cashout?timeout=60000"/>
+            <process id="_Init_Strategy_co" ref="killRoute"/>
+            <doTry id="co_doTry2">
+                <to id="co_to4" uri="direct:getseqnum"/>
+                <log id="_log8" message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}\nRoute enter:   ${bean:execCounter.incrementAndGet}"/>
+                <log id="co_input_msg" message="[${exchangeProperty[transId]}] Input Message : ${body}"/>
+                <setProperty id="_setProperty16" propertyName="clientIp">
+                    <simple>${in.headers.X-forwarded-for}</simple>
+                </setProperty>
+                <setProperty id="_setProperty1" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
+                <setProperty id="co_setProperty_flowLog1" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <setProperty id="_setProperty2" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <wireTap id="co_wireTap1" uri="direct:generatelog"/>
+                <bean id="_bean8" method="processBodyCheck(${body})" ref="msgValidator"/>
+                <convertBodyTo id="co_String" type="java.lang.String"/>
+                <unmarshal id="co_input_to_pojo">
+                    <custom ref="idm_dataformat"/>
+                </unmarshal>
+                <log id="co_TrxType" message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}"/>
+                <bean id="_bean3"
+                    method="process(${body.timestamp},${body.trxType}, 'CASHOUT')" ref="msgValidator"/>
+                <bean id="co_bean3"
+                    method="generateFlReqCashout(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})" ref="IdmPreGenerateFL"/>
+                <marshal id="co_marshal4">
+                    <flatpack definition="IdmFlconfigIn_cashout.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <setProperty id="co_keepBody" propertyName="bodyBeforeCallTcpRouter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="co_log14" message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty3" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <setProperty id="co_setProperty_flowLog2" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="co_wireTap2" uri="direct:generatelog"/>
+                <to id="co_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean5"
+                    method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})" ref="getAmqData"/>
+                <process id="co_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty6" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="co_setProperty_flowLog3" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="co_wireTap3" uri="direct:generatelog"/>
+                <log id="co_log15" message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}"/>
+                <choice id="co_choice3">
+                    <when id="co_when31">
+                        <simple>${body} contains 'Cannot connect'</simple>
+                        <log id="co_log5" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="err_co_setHeader2">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2">
+                            <simple>Maaf server sedang Maintenance</simple>
+                        </setHeader>
+                        <setBody id="hlierr_co_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')" ref="IdmJsonResponse"/>
+                        <marshal id="_marshal1">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="_when1_errCore_rev">
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
+                        <log id="_log2_errCore" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="_unmarshal2">
+                            <flatpack
+                                definition="IdmFlconfigOut_Error.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="_log3" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}"/>
+                        <setProperty id="_setProperty5" propertyName="respCode">
+                            <simple>${body.get(0).get(RESP_CODE)}</simple>
+                        </setProperty>
+                        <setProperty id="_setProperty4" propertyName="respDetail">
+                            <simple>${body.get(0).get(RESP_DETAIL)}</simple>
+                        </setProperty>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader1">
+                            <simple>${exchangeProperty[respDetail]}</simple>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2_errCore">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setBody id="hlierr_co_setBody2_errCore">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_errCore" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_errCore">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_errCore"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})" ref="IdmJsonResponse"/>
+                        <marshal id="_marshal1_errCore">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="_when4_rev">
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
+                        <log id="co_responseHli" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="co_unmarshal3">
+                            <flatpack
+                                definition="IdmFlconfigOut_cashout.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="co_log6" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
+                        <bean id="co_JsonResult"
+                            method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(DETAIL_TRX_CONFIRM)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponse"/>
+                        <marshal id="co_marshal5">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <otherwise id="co_otherwise3">
+                        <log id="_log2" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2_otw">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader3">
+                            <simple>Internal Server Error</simple>
+                        </setHeader>
+                        <setBody id="hlierr_co_setBody2_otw">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_otw" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_otw">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean29_otw"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponse"/>
+                        <marshal id="_marshal1_otw">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </otherwise>
+                </choice>
+                <setProperty id="_setProperty7" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="co_setProperty_flowLog4" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <wireTap id="co_wireTap4" uri="direct:generatelog"/>
+                <doCatch id="co_error404">
+                    <exception>com.json.netty.util.MessageErrorException</exception>
+                    <exception>com.json.netty.util.CamelCustomException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <log id="co_log1" message="[${exchangeProperty[transId]}] Error404 Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="404_co_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="404_co_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_co_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_co__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'404','Format data salah')" ref="IdmJsonResponse"/>
+                    <marshal id="404_co_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="co_errorGeneral">
+                    <exception>org.apache.camel.spi.ExceptionHandler</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>com.json.netty.util.MessageBackendErrorException</exception>
+                    <exception>java.io.IOException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <exception>java.lang.ClassCastException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
+                    <log id="co_errorBody_log1" message="[${exchangeProperty[transId]}] ErrorGeneral Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_errorGeneral_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="co_errorGeneral_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="co_errorGeneral_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="co_errorGeneral_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="co_errorBody_bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},'',${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponse"/>
+                    <marshal id="co_errorGeneral_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="co_error_bodyNull">
+                    <exception>com.json.netty.util.MessageBodyNullErrorException</exception>
+                    <log id="co_errorGeneral_log12" message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="co_errorBody_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <bean id="co_errorGeneral_bean2"
+                        method="assignValue('','','','','','','','','','','404','Format data salah')" ref="IdmJsonResponse"/>
+                    <marshal id="co_errorBody_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="rev_reversal">
+            <from id="rev_from4" uri="direct:reversal"/>
+            <process id="_Init_Strategy_rev" ref="killRoute"/>
+            <doTry id="rev_doTry2">
+                <to id="rev_to4" uri="direct:getseqnum"/>
+                <log id="_log7" message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}"/>
+                <log id="rev_input_msg" message="[${exchangeProperty[transId]}] Input Message : ${body}"/>
+                <setProperty id="_setProperty17" propertyName="clientIp">
+                    <simple>${in.headers.X-forwarded-for}</simple>
+                </setProperty>
+                <setProperty id="_setProperty1_rev" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
+                <setProperty id="_setProperty8" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <setProperty id="rev_setProperty_flowLog1" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <wireTap id="rev_wireTap1" uri="direct:generatelog"/>
+                <bean id="_bean9" method="processBodyCheck(${body})" ref="msgValidator"/>
+                <convertBodyTo id="rev_String" type="java.lang.String"/>
+                <unmarshal id="rev_input_to_pojo">
+                    <custom ref="idm_dataformat"/>
+                </unmarshal>
+                <log id="rev_TrxType" message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}"/>
+                <bean id="_bean3_rev"
+                    method="process(${body.timestamp},${body.trxType}, 'REVERSAL')" ref="msgValidator"/>
+                <bean id="rev_bean3"
+                    method="generateFlReqReversal(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})" ref="IdmPreGenerateFL"/>
+                <marshal id="rev_marshal4">
+                    <flatpack definition="IdmFlconfigIn_cashout.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <setProperty id="rev_keepBody" propertyName="bodyBeforeCallTcpRouter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="rev_log14" message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty9" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <setProperty id="rev_setProperty_flowLog2" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="rev_wireTap2" uri="direct:generatelog"/>
+                <to id="rev_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean6"
+                    method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})" ref="getAmqData"/>
+                <process id="rev_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty10" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="rev_setProperty_flowLog3" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="rev_wireTap3" uri="direct:generatelog"/>
+                <log id="rev_log15" message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}"/>
+                <choice id="rev_choice3">
+                    <when id="rev_when3">
+                        <simple>${body} contains 'Cannot connect'</simple>
+                        <log id="rev_log5" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="err_rev_setHeader2">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2_rev">
+                            <simple>Maaf server sedang Maintenance</simple>
+                        </setHeader>
+                        <setBody id="hlierr_rev_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_rev" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_rev">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_rev"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_rev">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="_when1_errCore">
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
+                        <log id="_log2_errCore_rev" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="_unmarshal2_rev">
+                            <flatpack
+                                definition="IdmFlconfigOut_Error.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="_log3_rev" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}"/>
+                        <setProperty id="_setProperty5_rev" propertyName="respCode">
+                            <simple>${body.get(0).get(RESP_CODE)}</simple>
+                        </setProperty>
+                        <setProperty id="_setProperty4_rev" propertyName="respDetail">
+                            <simple>${body.get(0).get(RESP_DETAIL)}</simple>
+                        </setProperty>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader1_rev">
+                            <simple>${exchangeProperty[respDetail]}</simple>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2_errCore">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setBody id="hlierr_rev_setBody2_errCore">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_errCore_rev" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_errCore_rev">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_errCore_rev"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_errCore_rev">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="_when4_notf">
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
+                        <log id="rev_responseHli" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="rev_unmarshal3">
+                            <flatpack
+                                definition="IdmFlconfigOut_cashout.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="rev_log6" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
+                        <bean id="rev_JsonResult"
+                            method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponseB"/>
+                        <marshal id="rev_marshal5">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <otherwise id="rev_otherwise3">
+                        <log id="_log2_rev" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2_otw">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader3_rev">
+                            <simple>Internal Server Error</simple>
+                        </setHeader>
+                        <setBody id="hlierr_rev_setBody2_otw">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_otw_rev" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_otw_rev">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_otw_rev"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_otw_rev">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </otherwise>
+                </choice>
+                <setProperty id="_setProperty11" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="rev_setProperty_flowLog4" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <wireTap id="rev_wireTap4" uri="direct:generatelog"/>
+                <doCatch id="rev_error404">
+                    <exception>com.json.netty.util.MessageErrorException</exception>
+                    <exception>com.json.netty.util.CamelCustomException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <log id="rev_log1" message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="404_rev_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="404_rev_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_rev_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_rev__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'404','Format data salah')" ref="IdmJsonResponseB"/>
+                    <marshal id="404_rev_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="rev_errorGeneral">
+                    <exception>com.json.netty.util.MessageBackendErrorException</exception>
+                    <exception>java.io.IOException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <exception>java.lang.ClassCastException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
+                    <log id="rev_errorGeneral_log1" message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_errorGeneral_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="rev_errorGeneral_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="rev_errorGeneral_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="rev_errorGeneral_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="rev_errorGeneral_bean29"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponseB"/>
+                    <marshal id="rev_errorGeneral_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="rev_error_bodyNull">
+                    <exception>com.json.netty.util.MessageBodyNullErrorException</exception>
+                    <log id="rev_errorGeneral_log12" message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="rev_errorBody_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <bean id="rev_errorGeneral_bean2"
+                        method="assignValue('','','','','','','','','','404','Format data salah')" ref="IdmJsonResponseB"/>
+                    <marshal id="rev_errorBody_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="notf_notification">
+            <from id="notf_from4" uri="direct:notification"/>
+            <process id="_Init_Strategy_notf" ref="killRoute"/>
+            <doTry id="notf_doTry2">
+                <to id="notf_to4" uri="direct:getseqnum"/>
+                <log id="_log6" message="[${exchangeProperty[transId]}] Request Headers : ${in.headers}, Client IP : ${in.headers.X-forwarded-for}"/>
+                <log id="notf_input_msg" message="[${exchangeProperty[transId]}] Input Message : ${body}"/>
+                <setProperty id="_setProperty18" propertyName="clientIp">
+                    <simple>${in.headers.X-forwarded-for}</simple>
+                </setProperty>
+                <setProperty id="_setProperty1_notf" propertyName="bodyOri">
+                    <simple>${body}</simple>
+                </setProperty>
+                <setProperty id="_setProperty15" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <setProperty id="notf_setProperty_flowLog1" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <wireTap id="notf_wireTap1" uri="direct:generatelog"/>
+                <bean id="_bean10" method="processBodyCheck(${body})" ref="msgValidator"/>
+                <convertBodyTo id="notf_String" type="java.lang.String"/>
+                <unmarshal id="notf_input_to_pojo">
+                    <custom ref="idm_dataformat"/>
+                </unmarshal>
+                <log id="notf_TrxType" message="[${exchangeProperty[transId]}] Transaction Type value : ${body.trxType}"/>
+                <bean id="_bean3_notf"
+                    method="process(${body.timestamp},${body.trxType}, 'NOTIFICATION')" ref="msgValidator"/>
+                <bean id="notf_bean3"
+                    method="generateFlReqNotification(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.detail.trxId},${body.detail.token},${body.detail.noHP},${body.detail.amount},${body.timeout},${body.versiProgram},${body.respCode},${body.respDetail})" ref="IdmPreGenerateFL"/>
+                <marshal id="notf_marshal4">
+                    <flatpack definition="IdmFlconfigIn_cashout.xml"
+                        fixed="true" ignoreFirstRecord="false"/>
+                </marshal>
+                <setProperty id="notf_keepBody" propertyName="bodyBeforeCallTcpRouter">
+                    <simple>${body}</simple>
+                </setProperty>
+                <log id="notf_log14" message="[${exchangeProperty[transId]}] Request to HLI TCP Router:  ${body}"/>
+                <setProperty id="_setProperty14" propertyName="messageType">
+                    <simple>Request</simple>
+                </setProperty>
+                <setProperty id="notf_setProperty_flowLog2" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="notf_wireTap2" uri="direct:generatelog"/>
+                <to id="notf_to22" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+                <bean id="_bean7"
+                    method="process({{amq.address}},{{amq.port}},{{amq.user}},{{amq.password}},{{amq.queue.name}},{{amq.get.resp.timeout}})" ref="getAmqData"/>
+                <process id="notf_Check bodyLength" ref="getBodyLength"/>
+                <setProperty id="_setProperty13" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="notf_setProperty_flowLog3" propertyName="flowLog">
+                    <simple>fl</simple>
+                </setProperty>
+                <wireTap id="notf_wireTap3" uri="direct:generatelog"/>
+                <log id="notf_log15" message="[${exchangeProperty[transId]}] Response Length : ${exchangeProperty[bodyLength]}"/>
+                <choice id="notf_choice3">
+                    <when id="notf_when3">
+                        <simple>${body} contains 'Cannot connect'</simple>
+                        <log id="notf_log5" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="err_notf_setHeader2">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader2_notf">
+                            <simple>Maaf server sedang Maintenance</simple>
+                        </setHeader>
+                        <setBody id="hlierr_notf_setBody2">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_notf" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_notf">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_notf"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'101','Maaf server sedang Maintenance')" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_notf">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="notf_when1_errCore">
+                        <simple>${exchangeProperty[bodyLength]} == '74'</simple>
+                        <log id="_log2_errCore_notf" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="_unmarshal2_notf">
+                            <flatpack
+                                definition="IdmFlconfigOut_Error.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="_log3_notf" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(RESP_CODE)}"/>
+                        <setProperty id="_setProperty5_notf" propertyName="respCode">
+                            <simple>${body.get(0).get(RESP_CODE)}</simple>
+                        </setProperty>
+                        <setProperty id="_setProperty4_notf" propertyName="respDetail">
+                            <simple>${body.get(0).get(RESP_DETAIL)}</simple>
+                        </setProperty>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader1_notf">
+                            <simple>${exchangeProperty[respDetail]}</simple>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2_errCore">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setBody id="hlierr_notf_setBody2_errCore">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_errCore_notf" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_errCore_notf">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_errCore_notf"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},${exchangeProperty[respCode]},${exchangeProperty[respDetail]})" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_errCore_notf">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <when id="_when4">
+                        <simple>${exchangeProperty[bodyLength]} == '189'</simple>
+                        <log id="notf_responseHli" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <unmarshal id="notf_unmarshal3">
+                            <flatpack
+                                definition="IdmFlconfigOut_cashout.xml"
+                                fixed="true" ignoreFirstRecord="false"/>
+                        </unmarshal>
+                        <log id="notf_log6" message="[${exchangeProperty[transId]}] Transaction Type : ${body.get(0).get(TRX_TYPE)}"/>
+                        <bean id="notf_JsonResult"
+                            method="assignValueAndCheck(${exchangeProperty[bodyResponseOri]},${body.get(0).get(LENGTH)},${body.get(0).get(SWITCH_CODE)},${body.get(0).get(TRANSACTION_ID)},${body.get(0).get(CLIENT_ID_COMMON)},${body.get(0).get(TIMESTAMP)},${body.get(0).get(CLIENT_ID)},${body.get(0).get(KEY)},${body.get(0).get(BRANCH_ID)},${body.get(0).get(COUNTER_ID)},${body.get(0).get(PRODUCT_TYPE)},${body.get(0).get(TRX_TYPE)},${body.get(0).get(TIMEOUT)},${body.get(0).get(VERSI_PROGRAM)},${body.get(0).get(RESP_CODE)},${body.get(0).get(RESP_DETAIL)})" ref="IdmJsonResponseB"/>
+                        <marshal id="notf_marshal5">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </when>
+                    <otherwise id="notf_otherwise3">
+                        <log id="_log2_notf" message="[${exchangeProperty[transId]}] Response from HLI TCP Router:  ${body}"/>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2_otw">
+                            <constant>500</constant>
+                        </setHeader>
+                        <setHeader
+                            headerName="Exchange.HTTP_RESPONSE_TEXT" id="_setHeader3_notf">
+                            <simple>Internal Server Error</simple>
+                        </setHeader>
+                        <setBody id="hlierr_notf_setBody2_otw">
+                            <simple>${exchangeProperty[bodyOri]}</simple>
+                        </setBody>
+                        <convertBodyTo id="_convertBodyTo1_otw_notf" type="java.lang.String"/>
+                        <unmarshal id="_unmarshal1_otw_notf">
+                            <custom ref="idm_dataformat"/>
+                        </unmarshal>
+                        <bean id="_bean2_otw_notf"
+                            method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponseB"/>
+                        <marshal id="_marshal1_otw_notf">
+                            <json library="Jackson"/>
+                        </marshal>
+                    </otherwise>
+                </choice>
+                <setProperty id="_setProperty12" propertyName="messageType">
+                    <simple>Response</simple>
+                </setProperty>
+                <setProperty id="notf_setProperty_flowLog4" propertyName="flowLog">
+                    <simple>json</simple>
+                </setProperty>
+                <wireTap id="notf_wireTap4" uri="direct:generatelog"/>
+                <doCatch id="notf_error404">
+                    <exception>com.json.netty.util.MessageErrorException</exception>
+                    <exception>com.json.netty.util.CamelCustomException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <log id="notf_log1" message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="404_notf_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="404_notf_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="404_notf_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="404_notf__bean2"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'404','Format data salah')" ref="IdmJsonResponseB"/>
+                    <marshal id="404_notf_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="notf_errorGeneral">
+                    <exception>com.json.netty.util.MessageBackendErrorException</exception>
+                    <exception>java.io.IOException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <exception>java.lang.ClassCastException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <exception>org.apache.camel.http.common.HttpOperationFailedException</exception>
+                    <log id="notf_errorGeneral_log1" message="[${exchangeProperty[transId]}] Error       Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_errorGeneral_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <setBody id="notf_errorGeneral_setBody2">
+                        <simple>${exchangeProperty[bodyOri]}</simple>
+                    </setBody>
+                    <convertBodyTo id="notf_errorGeneral_convertBodyTo1" type="java.lang.String"/>
+                    <unmarshal id="notf_errorGeneral_unmarshal1">
+                        <custom ref="idm_dataformat"/>
+                    </unmarshal>
+                    <bean id="notf_errorGeneral_bean22"
+                        method="assignValue(${body.timestamp},${body.clientID},${body.key},${body.branchID},${body.counterID},${body.productType},${body.trxType},${body.timeout},${body.versiProgram},'500','Internal Server Error')" ref="IdmJsonResponseB"/>
+                    <marshal id="notf_errorGeneral_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+                <doCatch id="notf_error_bodyNull">
+                    <exception>com.json.netty.util.MessageBodyNullErrorException</exception>
+                    <log id="notf_errorGeneral_log12" message="[${exchangeProperty[transId]}] ErrorBody Message : ${exception.message}"/>
+                    <setHeader headerName="Exchange.HTTP_RESPONSE_CODE" id="notf_errorBody_setHeader2">
+                        <constant>500</constant>
+                    </setHeader>
+                    <bean id="notf_errorGeneral_bean2"
+                        method="assignValue('','','','','','','','','','404','Format data salah')" ref="IdmJsonResponseB"/>
+                    <marshal id="notf_errorBody_marshal1">
+                        <json library="Jackson"/>
+                    </marshal>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_get_Seq">
+            <from id="_from31" uri="direct:getseqnum"/>
+            <process id="_Init_Strategy_getseqnum" ref="killRoute"/>
+            <throttle id="_throttle1" timePeriodMillis="100">
+                <constant>1</constant>
+                <bean id="_bean1" method="getSequence('getSequence')" ref="generateCounter"/>
+            </throttle>
+        </route>
+        <route id="_Quartz">
+            <from id="_to3" uri="quartz:groupName/timerName?cron=0 0 0 1/1 * ? *"/>
+            <process id="_Init_Strategy_quartz" ref="killRoute"/>
+            <to id="_to1" uri="direct:quartzTask"/>
+        </route>
+        <route id="_refresh_Seq">
+            <from id="_to2" uri="direct:quartzTask"/>
+            <process id="_Init_Strategy_quartztask" ref="killRoute"/>
+            <log id="_log12" message="[${exchangeProperty[transId]}] This task is triggered from Quartz, for refresh sequence"/>
+            <bean id="_bean4" method="resetSequence('resetSequence')" ref="generateCounter"/>
+        </route>
+        <route id="_GET">
+            <from id="_from1" uri="direct:get"/>
+            <process id="_Init_Strategy_get" ref="killRoute"/>
+            <doTry id="_doTry1">
+                <log id="_log1" loggingLevel="WARN" message="[${exchangeProperty[transId]}] Header name value : ${header.name}"/>
+                <setBody id="_setBody4">
+                    <simple>${header.name}</simple>
+                </setBody>
+                <setBody id="_setBody3">
+                    <simple>{ "result" : "Hello, ${header.name}" }</simple>
+                </setBody>
+                <doCatch id="_doCatch1">
+                    <!-- catch multiple exceptions -->
+                    <exception>java.io.IOException</exception>
+                    <exception>java.lang.IllegalStateException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <setBody id="_setBody5">
+                        <simple>{ "result" : "Error" }</simple>
+                    </setBody>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_hli_tcp_router">
+            <from id="_from2" uri="seda:hlitcprouter?concurrentConsumers=100&amp;exchangePattern=InOnly&amp;multipleConsumers=true&amp;purgeWhenStopping=true&amp;discardIfNoConsumers=true&amp;timeout=60000&amp;waitForTaskToComplete=Never"/>
+            <process id="_Init_Strategy_hli" ref="killRoute"/>
+            <doTry id="_doTry2">
+                <to id="_toHliTcpRouter" uri="netty4:tcp://{{tcprouter.rr.address}}:{{tcprouter.rr.port}}?disconnect=true&amp;keepAlive=false&amp;reuseAddress=false&amp;tcpNoDelay=false&amp;bridgeErrorHandler=true&amp;clientMode=true&amp;reconnectInterval=3000&amp;backlog=1000&amp;bossCount=100&amp;disconnectOnNoReply=false&amp;noReplyLogLevel=DEBUG&amp;serverExceptionCaughtLogLevel=DEBUG&amp;connectTimeout=60000&amp;requestTimeout=60000&amp;allowDefaultCodec=false&amp;autoAppendDelimiter=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/>
+                <bean id="_bean11" method="process504(${body})" ref="msgValidator"/>
+                <setHeader headerName="JMSCorrelationID" id="_co_JMSCorrelationID">
+                    <simple>${body.substring(8,28)}</simple>
+                </setHeader>
+                <log id="_co_log_amq_pre" message="Set transaction Id : [${header.JMSCorrelationID}] as JMSCorrelationID"/>
+                <convertBodyTo id="_convertBodyTo2" type="java.lang.String"/>
+                <choice id="_choice2">
+                    <when id="_when1">
+                        <simple>${header.JMSCorrelationID} contains ' '</simple>
+                        <log id="_log5" message="No data stored to AMQ"/>
+                    </when>
+                    <otherwise id="_otherwise1">
+                        <to id="_co_toAmq" pattern="InOnly" uri="activemq:queue:{{amq.queue.name}}?asyncConsumer=true&amp;replyToConcurrentConsumers=100&amp;replyToMaxConcurrentConsumers=100&amp;replyToOnTimeoutMaxConcurrentConsumers=100&amp;requestTimeout=30000"/>
+                        <log id="_log4" message="Send data with transaction Id [${header.JMSCorrelationID}] to AMQ Done"/>
+                    </otherwise>
+                </choice>
+                <to id="_to5" uri="mock:endstoredatra"/>
+                <!-- <to id="_toHliTcpRouter" uri="netty4:tcp://hli-tcp-router-apim.apps.ocp-dev.hanabank.co.id:32449?clientMode=true&amp;requestTimeout=10000&amp;allowDefaultCodec=false&amp;decoders=#string-decoder&amp;encoders=#string-encoder&amp;textline=true"/> -->
+                <doCatch id="_doCatch2">
+                    <exception>java.io.IOException</exception>
+                    <exception>java.net.ConnectException</exception>
+                    <exception>java.lang.ClassCastException</exception>
+                    <exception>java.lang.IllegalArgumentException</exception>
+                    <exception>io.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.jboss.netty.handler.timeout.ReadTimeoutException</exception>
+                    <exception>org.apache.camel.ExpressionEvaluationException</exception>
+                    <exception>org.apache.camel.CamelExchangeException</exception>
+                    <exception>org.apache.camel.language.bean.RuntimeBeanExpressionException</exception>
+                    <exception>org.apache.camel.InvalidPayloadException</exception>
+                    <exception>org.apache.camel.NoTypeConversionAvailableException</exception>
+                    <log id="log1_callRouter" message="Error in HLI router : Message : ${exception.message}"/>
+                </doCatch>
+            </doTry>
+        </route>
+        <route id="_generate_log">
+            <from id="_from3" uri="direct:generatelog"/>
+            <process id="_Init_Strategy_genLog" ref="killRoute"/>
+            <transform id="_cashout_log_1_transform">
+                <simple>Transaction Id : ${exchangeProperty[transId]}\nMessage Type : ${exchangeProperty[messageType]}\nClient IP : ${exchangeProperty[clientIp]}\nTimestamp : ${date:now:ddMMyyy HH:mm:ss}\nMessage:\n${body}\n\n\n</simple>
+            </transform>
+            <choice id="_choice1">
+                <when id="_json_log">
+                    <simple>${exchangeProperty[flowLog]} == 'json'</simple>
+                    <toD id="_cashout_log_1_write" uri="ftp://{{ftp.address}}:{{ftp.port}}/indomaret/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}_json.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password={{ftp.password}}&amp;username={{ftp.user}}"/>
+                </when>
+                <otherwise id="_FL_log">
+                    <toD id="_cashout_log_2_write" uri="ftp://{{ftp.address}}:{{ftp.port}}/indomaret/${date:now:ddMMyyy}/?fileName=${date:now:ddMMyyy}.txt&amp;passiveMode=true&amp;noop=true&amp;fileExist=Append&amp;disconnectOnBatchComplete=true&amp;password={{ftp.password}}&amp;username={{ftp.user}}"/>
+                </otherwise>
+            </choice>
+            <to id="_to4" uri="mock:tap"/>
+        </route>
+    </camelContext>
+    <bean class="org.jboss.netty.handler.codec.string.StringDecoder" id="stringDecoder"/>
+    <!-- String to ChannelBuffer/ByteBuf -->
+    <bean class="org.jboss.netty.handler.codec.string.StringEncoder" id="stringEncoder"/>
+    <bean class="com.json.netty.GenerateJson" id="generateJson" scope="singleton"/>
+    <bean class="com.json.netty.PreGenerateFixedLength"
+        id="preGenerateFL" scope="singleton"/>
+    <bean class="com.json.netty.util.JsonResult" id="jsonResult" scope="singleton"/>
+    <bean class="com.json.netty.IdmPreGenerateFixedLength"
+        id="IdmPreGenerateFL" scope="singleton"/>
+    <bean class="com.json.netty.pojo.out.IdmMainPojo"
+        id="IdmJsonResponse" scope="singleton"/>
+    <bean class="com.json.netty.pojo.out.IdmMainPojoB"
+        id="IdmJsonResponseB" scope="singleton"/>
+    <bean class="com.json.netty.GenerateCounter" id="generateCounter" scope="singleton"/>
+    <bean class="com.json.netty.RefreshCounter" id="refreshCounter" scope="singleton"/>
+    <bean class="com.json.netty.KillRoute" id="killRoute" scope="singleton"/>
+    <bean class="io.netty.handler.codec.string.StringDecoder" id="string-decoder"/>
+    <bean class="io.netty.handler.codec.string.StringEncoder" id="string-encoder"/>
+    <bean class="com.json.netty.util.GeneralError" id="generalError" scope="singleton"/>
+    <bean class="com.json.netty.GetBodyLength" id="getBodyLength" scope="singleton"/>
+    <bean class="com.json.netty.util.MessageValidator" id="msgValidator" scope="singleton"/>
+    <bean class="com.json.netty.GetAmqData" id="getAmqData" scope="singleton"/>
 </beans>
